@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.btn {
+  @apply px-4 py-2 rounded-full font-fredoka text-white bg-deepSkyBlue hover:bg-darkblue transition;
+}
+.btn-outline {
+  @apply px-4 py-2 rounded-full font-fredoka border-2 border-deepSkyBlue text-deepSkyBlue hover:bg-deepSkyBlue hover:text-white transition;
+}
+.card {
+  @apply bg-white rounded-2xl shadow-card p-4;
+}
+.section-title {
+  @apply font-fredoka text-3xl md:text-4xl text-darkblue mb-4;
+}
+.subtitle {
+  @apply text-deepSkyBlue font-fredoka;
+}

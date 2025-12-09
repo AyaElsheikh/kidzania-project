@@ -1,0 +1,58 @@
+{
+  "courses": [
+    {
+      "id": "c1",
+      "title": "Arabic for Kids",
+      "title_ar": "العربية للأطفال",
+      "title_en": "Arabic for Kids",
+      "category": "Arabic",
+      "price": 29,
+      "thumbnail": "/assets/arabic.svg",
+      "description": "تعليم بسيط للأطفال",
+      "description_ar": "تعليم بسيط للأطفال",
+      "description_en": "Simple Arabic learning for kids",
+      "age": "4-6",
+      "seats": 10,
+      "lessons": [
+        { "id": "l1", "title": "الحروف 1", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" },
+        { "id": "l2", "title": "الحروف 2", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" }
+      ]
+    },
+    {
+      "id": "c2",
+      "title": "English Basics",
+      "title_ar": "أساسيات الإنجليزية",
+      "title_en": "English Basics",
+      "category": "English",
+      "price": 29,
+      "thumbnail": "/assets/english.svg",
+      "description": "Learn simple English",
+      "description_ar": "تعلم الإنجليزية بأسلوب بسيط",
+      "description_en": "Learn simple English",
+      "age": "5-7",
+      "seats": 10,
+      "lessons": [
+        { "id": "l1", "title": "ABC", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" },
+        { "id": "l2", "title": "Words", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" }
+      ]
+    },
+    {
+      "id": "c3",
+      "title": "Fun Math",
+      "title_ar": "رياضيات ممتعة",
+      "title_en": "Fun Math",
+      "category": "Math",
+      "price": 29,
+      "thumbnail": "/assets/math.svg",
+      "description": "Numbers and games",
+      "description_ar": "الأرقام والألعاب",
+      "description_en": "Numbers and games",
+      "age": "4-8",
+      "seats": 12,
+      "lessons": [
+        { "id": "l1", "title": "Counting", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" },
+        { "id": "l2", "title": "Addition", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" }
+      ]
+    }
+  ]
+}
