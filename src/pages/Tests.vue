@@ -1,14 +1,16 @@
 <template>
-  <section class="container mx-auto px-4 py-10">
-    <h2 class="section-title">{{ t('tests.title') }}</h2>
-    <p class="text-center text-gray-600 mb-8">{{ t('tests.subtitle') }}</p>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div v-for="exam in exams" :key="exam.id" class="card">
-        <h3 class="font-fredoka text-xl text-darkblue mb-2">{{ exam.title }}</h3>
-        <p class="text-sm text-gray-600 mb-4">{{ t('tests.course') }}: {{ getCourseTitle(exam.courseId) }}</p>
-        <router-link :to="`/test/${exam.id}`" class="btn">{{ t('tests.start') }}</router-link>
+  <section class="container py-5">
+    <h2 class="section-title text-center">{{ t('tests.title') }}</h2>
+    <p class="text-center text-muted mb-4">{{ t('tests.subtitle') }}</p>
+    <div class="row g-3">
+      <div v-for="exam in exams" :key="exam.id" class="col-12 col-md-6">
+        <div class="card h-100 card-soft p-3">
+          <h3 class="fs-5 text-darkblue mb-2">{{ exam.title }}</h3>
+          <p class="text-muted small mb-3">{{ t('tests.course') }}: {{ getCourseTitle(exam.courseId) }}</p>
+          <router-link :to="`/test/${exam.id}`" class="btn btn-primary btn-sm">{{ t('tests.start') }}</router-link>
+        </div>
       </div>
-      <div v-if="exams.length === 0" class="col-span-2 text-center text-gray-600">
+      <div v-if="exams.length === 0" class="col-12 text-center text-muted">
         {{ t('tests.empty') }}
       </div>
     </div>

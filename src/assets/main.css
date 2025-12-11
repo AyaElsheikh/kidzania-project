@@ -1,19 +1,57 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+:root {
+  /* Primary Color - Main */
+  --primary: #033B62;
+  
+  /* Primary Colors */
+  --primary-light: #81DFFF;
+  --primary-medium: #00BFFF;
+  --primary-pale: #D9F5FF;
+  
+  /* Secondary Colors */
+  --secondary-green: #90EE90;
+  --secondary-pink: #FFC0CB;
+  --secondary-salmon: #FFA07A;
+  --secondary-gold: #FFD700;
+  
+  /* Legacy support */
+  --darkblue: #033B62;
+  --pale-cyan: #81DFFF;
+  --pink: #FFC0CB;
+  --light-green: #90EE90;
+  --light-salmon: #FFA07A;
+}
 
-.btn {
-  @apply px-4 py-2 rounded-full font-fredoka text-white bg-deepSkyBlue hover:bg-darkblue transition;
+body {
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f8f9fa;
 }
-.btn-outline {
-  @apply px-4 py-2 rounded-full font-fredoka border-2 border-deepSkyBlue text-deepSkyBlue hover:bg-deepSkyBlue hover:text-white transition;
-}
-.card {
-  @apply bg-white rounded-2xl shadow-card p-4;
-}
+
 .section-title {
-  @apply font-fredoka text-3xl md:text-4xl text-darkblue mb-4;
+  font-family: 'Fredoka', 'Segoe UI', sans-serif;
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  color: var(--primary);
+  margin-bottom: 1rem;
 }
-.subtitle {
-  @apply text-deepSkyBlue font-fredoka;
+
+.text-darkblue { color: var(--primary) !important; }
+.bg-darkblue { background-color: var(--primary) !important; }
+.bg-pink { background-color: var(--secondary-pink) !important; }
+.bg-lightGreen { background-color: var(--secondary-green) !important; }
+.bg-lightSalmon { background-color: var(--secondary-salmon) !important; }
+.bg-paleCyan { background-color: var(--primary-pale) !important; }
+.bg-gold { background-color: var(--secondary-gold) !important; }
+
+.card-soft {
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.hero-shape {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+}
+
+.pill {
+  border-radius: 999px;
 }

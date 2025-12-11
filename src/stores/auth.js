@@ -18,18 +18,35 @@ export const useAuthStore = defineStore('auth', {
       const list = localStorage.getItem(LS_USERS)
       if (list) this.users = JSON.parse(list)
     },
-    loginOrRegister({ name, email }) {
+    register({ name, email, password, phone }) {
+      const exists = this.users.find(u => u.email === email)
+      if (exists) throw new Error('user-exists')
+      const newUser = { id: Date.now().toString(), name, email, password, phone }
+      this.users.push(newUser)
+      localStorage.setItem(LS_USERS, JSON.stringify(this.users))
+      this.user = { id: newUser.id, name: newUser.name, email: newUser.email }
+      localStorage.setItem(LS_KEY, JSON.stringify(this.user))
+    },
+    login({ email, password }) {
+      const exists = this.users.find(u => u.email === email)
+      if (!exists) throw new Error('no-user')
+      if (exists.password !== password) throw new Error('bad-pass')
+      this.user = { id: exists.id, name: exists.name, email: exists.email }
+      localStorage.setItem(LS_KEY, JSON.stringify(this.user))
+    },
+    loginOrRegister({ name, email, password, phone }) {
+      // backwards compatibility
       const exists = this.users.find(u => u.email === email)
       if (exists) {
-        this.user = exists
+        this.user = { id: exists.id, name: exists.name, email: exists.email }
       } else {
-        this.user = { id: Date.now().toString(), name, email }
-        this.users.push(this.user)
+        const newUser = { id: Date.now().toString(), name, email, password: password || '12345678', phone }
+        this.users.push(newUser)
         localStorage.setItem(LS_USERS, JSON.stringify(this.users))
+        this.user = { id: newUser.id, name: newUser.name, email: newUser.email }
       }
       localStorage.setItem(LS_KEY, JSON.stringify(this.user))
     },
-    login(payload) { this.loginOrRegister(payload) },
     logout() {
       this.user = null
       localStorage.removeItem(LS_KEY)

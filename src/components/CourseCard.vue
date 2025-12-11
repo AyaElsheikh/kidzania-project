@@ -1,11 +1,13 @@
 <template>
-  <div class="card flex flex-col">
-    <img :src="course.thumbnail" alt="thumb" class="w-full h-40 object-cover rounded-xl" />
-    <h3 class="mt-3 font-fredoka text-xl text-darkblue">{{ displayTitle }}</h3>
-    <p class="text-sm text-gray-600">{{ displayDesc }}</p>
-    <div class="mt-4 flex items-center justify-between">
-      <span class="font-fredoka text-deepSkyBlue">${{ course.price }}</span>
-      <router-link class="btn" :to="`/course/${course.id}`">{{ t('nav.signup') }}</router-link>
+  <div class="card h-100">
+    <img :src="course.thumbnail" alt="thumb" class="card-img-top" style="height: 160px; object-fit: cover;" />
+    <div class="card-body d-flex flex-column">
+      <h3 class="card-title fs-5 text-darkblue mb-2">{{ displayTitle }}</h3>
+      <p class="card-text text-muted small flex-grow-1">{{ displayDesc }}</p>
+      <div class="d-flex align-items-center justify-content-between mt-3">
+        <span class="fw-bold text-primary">${{ course.price }}</span>
+        <router-link class="btn btn-primary btn-sm" :to="`/course/${course.id}`">{{ t('nav.signup') }}</router-link>
+      </div>
     </div>
   </div>
 </template>

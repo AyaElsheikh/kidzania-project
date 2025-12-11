@@ -1,91 +1,81 @@
 <template>
   <!-- Hero Section -->
-  <section class="relative overflow-hidden bg-deepSkyBlue min-h-[600px] flex items-center">
-    <div class="absolute inset-0 opacity-20">
-      <div class="absolute top-10 right-10 text-6xl">☀️</div>
-      <div class="absolute top-20 left-20 text-4xl">🎈</div>
-      <div class="absolute bottom-20 left-10 text-3xl">✏️</div>
-      <div class="absolute top-40 right-1/4 text-4xl">🪁</div>
-    </div>
-    <div class="relative container mx-auto px-4 py-16 grid md:grid-cols-2 items-center gap-8">
-      <div class="text-white">
-        <h1 class="font-fredoka text-4xl md:text-6xl mb-4">{{ t('home.title') }}</h1>
-        <p class="text-lg md:text-xl mb-6 opacity-90">{{ t('home.desc') }}</p>
-        <router-link to="/courses" class="inline-block px-6 py-3 bg-darkblue text-white rounded-lg font-fredoka hover:bg-opacity-90 transition">
-          {{ t('home.learnMore') }}
-        </router-link>
-      </div>
-      <div class="grid place-items-center relative">
-        <div class="relative w-full max-w-md">
-          <div class="absolute -bottom-10 -left-10 w-72 h-72 bg-white rounded-full opacity-30 blur-3xl"></div>
-          <div class="relative z-10">
-            <img src="/assets/hero.svg" alt="kids" class="w-full drop-shadow-2xl" />
-          </div>
+  <section class="hero-section  position-relative overflow-hidden  text-white">
+    <div class="container py-5">
+      <div class="row align-items-center g-4">
+        <div class="col-md-6">
+          <h1 class="fw-bold display-5 mb-3">{{ t('home.title') }}</h1>
+          <p class="fs-5 mb-4 opacity-90">{{ t('home.desc') }}</p>
+          <router-link to="/courses" class="btn btn-dark btn-lg pill">
+            {{ t('home.learnMore') }}
+          </router-link>
         </div>
+        
       </div>
     </div>
+   
   </section>
 
   <!-- Empowering Young Minds Section -->
-  <section class="bg-white py-16">
-    <div class="container mx-auto px-4">
+  <section class="bg-white py-5">
+    <div class="container">
       <h2 class="section-title text-center">{{ t('home.empowering') }}</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">{{ t('home.empowering.subtitle') }}</p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-        <div class="grid gap-6">
-          <div class="card">
-            <div class="flex items-start gap-4">
-              <div class="w-14 h-14 bg-pink rounded-full grid place-items-center text-darkblue font-fredoka text-2xl flex-shrink-0">
-                🧪
+      <p class="text-center text-muted mb-4 mx-auto" style="max-width: 680px;">{{ t('home.empowering.subtitle') }}</p>
+      <div class="row g-4 align-items-center">
+        <div class="col-md-4 d-grid gap-3">
+          <div class="card card-soft p-3">
+            <div class="d-flex align-items-start gap-3">
+              <div class="rounded-circle bg-pink d-flex align-items-center justify-content-center flex-shrink-0" style="width:56px;height:56px;">
+                <img src="/assets/images/icon 1.png" alt="icon" class="img-fluid" style="width:32px;height:32px;" />
               </div>
               <div>
-                <h3 class="font-fredoka text-xl text-darkblue mb-2">{{ t('feature.lessons') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('feature.lessonsDesc') }}</p>
+                <h3 class="fs-5 text-darkblue mb-1">{{ t('feature.lessons') }}</h3>
+                <p class="text-muted small mb-0">{{ t('feature.lessonsDesc') }}</p>
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="flex items-start gap-4">
-              <div class="w-14 h-14 bg-paleCyan rounded-full grid place-items-center text-darkblue font-fredoka text-2xl flex-shrink-0">
-                ✂️
+          <div class="card card-soft p-3">
+            <div class="d-flex align-items-start gap-3">
+              <div class="rounded-circle bg-paleCyan d-flex align-items-center justify-content-center flex-shrink-0" style="width:56px;height:56px;">
+                <img src="/assets/images/icon 2.png" alt="icon" class="img-fluid" style="width:32px;height:32px;" />
               </div>
               <div>
-                <h3 class="font-fredoka text-xl text-darkblue mb-2">{{ t('feature.story') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('feature.storyDesc') }}</p>
+                <h3 class="fs-5 text-darkblue mb-1">{{ t('feature.story') }}</h3>
+                <p class="text-muted small mb-0">{{ t('feature.storyDesc') }}</p>
               </div>
-            </div>
-          </div>
-        </div>
-        <div class="grid place-items-center">
-          <div class="relative">
-            <div class="w-64 h-64 bg-pink rounded-2xl border-4 border-pink p-4">
-              <img src="/assets/center.svg" alt="learning" class="w-full h-full object-cover rounded-xl" />
-            </div>
-            <div class="absolute -top-4 -right-4 w-12 h-12 bg-paleCyan rounded-full grid place-items-center text-2xl">
-              ☁️
             </div>
           </div>
         </div>
-        <div class="grid gap-6">
-          <div class="card">
-            <div class="flex items-start gap-4">
-              <div class="w-14 h-14 bg-lightGreen rounded-full grid place-items-center text-darkblue font-fredoka text-2xl flex-shrink-0">
-                🍎
+        <div class="col-md-4 text-center">
+          <div class="position-relative d-inline-block">
+            <div class="bg-pink border border-light p-3 rounded-4" style="width: 240px; height: 240px;">
+              <img src="/assets/images/Home-Feature.png" alt="learning" class="img-fluid h-100 w-100 object-fit-cover rounded-3" />
+            </div>
+            <div class="position-absolute top-0 end-0 rounded-circle bg-paleCyan d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+              <img src="/assets/images/Bird.svg" alt="bird" class="opacity-75" style="width:24px;height:24px;" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 d-grid gap-3">
+          <div class="card card-soft p-3">
+            <div class="d-flex align-items-start gap-3">
+              <div class="rounded-circle bg-lightGreen d-flex align-items-center justify-content-center flex-shrink-0" style="width:56px;height:56px;">
+                <img src="/assets/images/icon 3.png" alt="icon" class="img-fluid" style="width:32px;height:32px;" />
               </div>
               <div>
-                <h3 class="font-fredoka text-xl text-darkblue mb-2">{{ t('feature.games') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('feature.gamesDesc') }}</p>
+                <h3 class="fs-5 text-darkblue mb-1">{{ t('feature.games') }}</h3>
+                <p class="text-muted small mb-0">{{ t('feature.gamesDesc') }}</p>
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="flex items-start gap-4">
-              <div class="w-14 h-14 bg-lightSalmon rounded-full grid place-items-center text-darkblue font-fredoka text-2xl flex-shrink-0">
-                📢
+          <div class="card card-soft p-3">
+            <div class="d-flex align-items-start gap-3">
+              <div class="rounded-circle bg-lightSalmon d-flex align-items-center justify-content-center flex-shrink-0" style="width:56px;height:56px;">
+                <img src="/assets/images/icon 4.png" alt="icon" class="img-fluid" style="width:32px;height:32px;" />
               </div>
               <div>
-                <h3 class="font-fredoka text-xl text-darkblue mb-2">{{ t('feature.creative') }}</h3>
-                <p class="text-gray-600 text-sm">{{ t('feature.creativeDesc') }}</p>
+                <h3 class="fs-5 text-darkblue mb-1">{{ t('feature.creative') }}</h3>
+                <p class="text-muted small mb-0">{{ t('feature.creativeDesc') }}</p>
               </div>
             </div>
           </div>
@@ -95,61 +85,73 @@
   </section>
 
   <!-- Highly Recommended Courses Section -->
-  <section class="py-16 relative overflow-hidden" style="background: linear-gradient(180deg, #E7F6FF 0%, #cfeefe 100%)">
-    <div class="absolute top-10 left-10 text-4xl opacity-30">🐦</div>
-    <div class="absolute top-20 right-20 text-4xl opacity-30">🪁</div>
-    <div class="container mx-auto px-4 relative z-10">
+  <section class="py-5 position-relative overflow-hidden" style="background: linear-gradient(180deg, #E7F6FF 0%, #cfeefe 100%)">
+    <img src="./assets/images/Bird.svg" alt="bird" class="position-absolute top-0 start-0 m-4" style="width: 48px; opacity: 0.4;" />
+    <img src="./assets/images/Kite.svg" alt="kite" class="position-absolute top-0 end-0 m-5" style="width: 56px; opacity: 0.4;" />
+    <div class="container position-relative">
       <h2 class="section-title text-center">{{ t('recommended.title') }}</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">{{ t('recommended.subtitle') }}</p>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div v-for="c in sample" :key="c.id" class="card border-2 border-dashed border-gray-300">
-          <img :src="c.thumbnail" class="w-full h-48 object-cover rounded-xl mb-4" />
-          <h3 class="font-fredoka text-xl text-darkblue mb-2">{{ locale==='en' ? (c.title_en || c.title) : (c.title_ar || c.title) }}</h3>
-          <p class="text-sm text-gray-600 mb-4">{{ locale==='en' ? (c.description_en || c.description) : (c.description_ar || c.description) }}</p>
-          <div class="flex items-center gap-4 text-sm text-gray-600 mb-4">
-            <span>{{ t('course.ageLabel') }} {{ c.age || '4-8' }}</span>
-            <span>{{ t('course.seatsLabel') }} {{ c.seats || 10 }}</span>
+      <p class="text-center text-muted mb-4 mx-auto" style="max-width: 760px;">{{ t('recommended.subtitle') }}</p>
+      <div class="row g-3">
+        <div v-for="c in sample" :key="c.id" class="col-12 col-md-4">
+          <div class="card h-100 border-0 card-soft p-3">
+            <img :src="thumbFor(c.id)" class="rounded-3 mb-3 w-100" style="height: 200px; object-fit: cover;" />
+            <h3 class="fs-5 text-darkblue mb-2">{{ locale==='en' ? (c.title_en || c.title) : (c.title_ar || c.title) }}</h3>
+            <p class="text-muted small mb-3">{{ locale==='en' ? (c.description_en || c.description) : (c.description_ar || c.description) }}</p>
+            <div class="d-flex gap-3 text-muted small mb-3">
+              <span>{{ t('course.ageLabel') }} {{ c.age || '4-8' }}</span>
+              <span>{{ t('course.seatsLabel') }} {{ c.seats || 10 }}</span>
+            </div>
+            <router-link 
+              class="btn w-100"
+              :class="{
+                'btn-outline-danger': c.id === 'c1',
+                'btn-primary': c.id === 'c2',
+                'btn-warning text-dark': c.id !== 'c1' && c.id !== 'c2'
+              }"
+              :to="`/course/${c.id}`"
+            >
+              {{ t('nav.signup') }}
+            </router-link>
           </div>
-          <router-link 
-            class="block w-full text-center px-4 py-2 rounded-lg font-fredoka transition"
-            :class="c.id === 'c1' ? 'bg-pink text-darkblue hover:bg-pink/80' : c.id === 'c2' ? 'bg-deepSkyBlue text-white hover:bg-deepSkyBlue/80' : 'bg-lightSalmon text-darkblue hover:bg-lightSalmon/80'"
-            :to="`/course/${c.id}`"
-          >
-            {{ t('nav.signup') }}
-          </router-link>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Trusted by Parents Section -->
-  <section class="bg-white py-16">
-    <div class="container mx-auto px-4">
+  <section class="bg-white py-5 position-relative">
+    <img src="/assets/images/Trusted by parents Sun.svg" alt="sun" class="position-absolute" style="top: -8px; left: 24px; width: 32px; opacity: 0.7;" />
+    <img src="/assets/images/Trusted by parents cloude.svg" alt="cloud" class="position-absolute" style="top: 32px; right: 24px; width: 64px; opacity: 0.6;" />
+    <div class="container">
       <h2 class="section-title text-center">{{ t('testimonials.title') }}</h2>
-      <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto">{{ t('testimonials.subtitle') }}</p>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
-        <div class="relative bg-pink rounded-2xl h-80 flex items-center justify-center">
-          <div class="text-center text-darkblue">
-            <div class="text-6xl mb-4">👨‍👩‍👧</div>
-            <p class="font-fredoka text-xl">Parent & Child</p>
+      <p class="text-center text-muted mb-4 mx-auto" style="max-width: 640px;">{{ t('testimonials.subtitle') }}</p>
+      <div class="row g-4 align-items-center justify-content-center">
+        <div class="col-md-5">
+          <div class="bg-pink rounded-4 overflow-hidden" style="height: 260px;">
+            <img src="/assets/images/Home-Feature.png" alt="family" class="w-100 h-100" style="object-fit: cover;" />
           </div>
         </div>
-        <div class="card border-2 border-dashed border-gray-300 relative">
-          <div class="flex items-center gap-2 mb-4">
-            <button class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-darkblue transition">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <span class="text-sm text-gray-600 font-rubik">01 / 03</span>
-            <button class="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-darkblue transition">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+        <div class="col-md-6">
+          <div class="card card-soft border-0 p-4">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <button class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <span class="text-muted small">01 / 03</span>
+              <button class="btn btn-outline-secondary btn-sm rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+            <div class="d-flex align-items-start gap-3 mb-3">
+              <img src="/assets/images/Trusted by parents Quotes.svg" alt="quotes" style="width:24px;height:24px; opacity:0.7;" />
+              <p class="text-muted fs-6 fst-italic mb-0">"{{ t('testimonials.quote') }}"</p>
+            </div>
+            <p class="text-darkblue fw-bold mb-0">- {{ t('testimonials.author') }}</p>
           </div>
-          <p class="text-gray-700 text-lg mb-6 italic">"{{ t('testimonials.quote') }}"</p>
-          <p class="text-darkblue font-fredoka">- {{ t('testimonials.author') }}</p>
         </div>
       </div>
     </div>
@@ -167,8 +169,25 @@ const i18n = useI18nStore()
 const t = i18n.t
 const locale = i18n.locale
 
+const thumbFor = (id) => {
+  if (id === 'c1') return '/assets/images/icon 1.png'
+  if (id === 'c2') return '/assets/images/icon 2.png'
+  return '/assets/images/icon 3.png'
+}
+
 onMounted(() => {
   store.load()
   sample.value = store.courses.slice(0, 3)
 })
 </script>
+
+<style scoped>
+.hero-section {
+  background: url('/assets/images/Hero Section-home.png') center/cover no-repeat;
+  min-height: 70vh;
+  padding-top: 100px;
+  padding-bottom: 120px;
+  position: relative;
+}
+
+</style>

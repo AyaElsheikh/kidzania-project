@@ -1,65 +1,99 @@
 <template>
-  <header class="bg-darkblue shadow-card">
-    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
-      <router-link to="/" class="flex items-center">
-        <img src="/assets/Logo.png" alt="Kidzademy" class="h-12 w-auto object-contain" />
+  <header class="text-white shadow-sm" style="background-color: #033B62;">
+    <nav class="navbar navbar-expand-lg navbar-dark container py-3">
+      <router-link to="/" class="navbar-brand d-flex align-items-center">
+        <img src="/assets/Logo.png" alt="Kidzademy" style="height: 48px;" class="me-2" />
       </router-link>
-      <nav class="hidden md:flex items-center gap-6 font-rubik">
-        <router-link 
-          to="/" 
-          class="text-white hover:text-green transition"
-          :class="{ 'text-green underline': $route.path === '/' }"
-        >
-          {{ t('nav.home') }}
-        </router-link>
-        <router-link 
-          to="/tests" 
-          class="text-white hover:text-green transition"
-          :class="{ 'text-green underline': $route.path === '/tests' }"
-        >
-          {{ t('nav.tests') }}
-        </router-link>
-        <router-link 
-          to="/profile" 
-          class="text-white hover:text-green transition"
-          :class="{ 'text-green underline': $route.path === '/profile' }"
-        >
-          {{ t('nav.myCourses') }}
-        </router-link>
-        <router-link 
-          to="/courses" 
-          class="text-white hover:text-green transition"
-          :class="{ 'text-green underline': $route.path.startsWith('/courses') }"
-        >
-          {{ t('nav.explore') }}
-        </router-link>
-        <router-link 
-          to="/play" 
-          class="text-white hover:text-green transition"
-          :class="{ 'text-green underline': $route.path === '/play' }"
-        >
-          {{ t('nav.playWithUs') }}
-        </router-link>
-      </nav>
-      <div class="flex items-center gap-3">
-        <router-link to="/auth" class="px-4 py-2 rounded-lg font-fredoka text-white bg-paleCyan hover:bg-deepSkyBlue transition">
-          {{ t('nav.register') }}
-        </router-link>
-        <div class="w-10 h-10 bg-lightGreen rounded-full grid place-items-center text-darkblue">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
+
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#mainNav"
+        aria-controls="mainNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center gap-lg-3">
+          <li class="nav-item">
+            <router-link
+              to="/"
+              class="nav-link"
+              :class="{ active: $route.path === '/' }"
+            >
+              {{ t('nav.home') }}
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/tests"
+              class="nav-link"
+              :class="{ active: $route.path === '/tests' }"
+            >
+              {{ t('nav.tests') }}
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/profile"
+              class="nav-link"
+              :class="{ active: $route.path === '/profile' }"
+            >
+              {{ t('nav.myCourses') }}
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/courses"
+              class="nav-link"
+              :class="{ active: $route.path.startsWith('/courses') }"
+            >
+              {{ t('nav.explore') }}
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <router-link
+              to="/play"
+              class="nav-link"
+              :class="{ active: $route.path === '/play' }"
+            >
+              {{ t('nav.playWithUs') }}
+            </router-link>
+          </li>
+          <li class="nav-item">
+            <LanguageSwitch />
+          </li>
+          <li class="nav-item ms-lg-2">
+            <router-link to="/auth" class="btn text-white fw-semibold" style="background-color: #00BFFF;">
+              {{ auth.isAuthenticated ? 'Login' : 'Sign up' }}
+            </router-link>
+          </li>
+          <li class="nav-item ms-lg-2">
+            <div class="rounded-circle bg-light text-dark d-grid place-items-center" style="width: 42px; height: 42px;">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-75 h-75" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+          </li>
+        </ul>
       </div>
-    </div>
+    </nav>
   </header>
 </template>
 
 <script setup>
 import { useI18nStore } from '@/stores/i18n.js'
+import { useAuthStore } from '@/stores/auth.js'
 import { useRoute } from 'vue-router'
+import LanguageSwitch from '@/components/LanguageSwitch.vue'
 
 const i18n = useI18nStore()
+const auth = useAuthStore()
 const route = useRoute()
 const t = i18n.t
+auth.load()
 </script>
