@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/pages/Home.vue'
 import Courses from '@/pages/Courses.vue'
 import CourseDetail from '@/pages/CourseDetail.vue'
+import CourseDetailsPage from '@/pages/CourseDetailsPage.vue'
 import Profile from '@/pages/Profile.vue'
 import Subscribe from '@/pages/Subscribe.vue'
 import NotFound from '@/pages/NotFound.vue'
@@ -24,6 +25,7 @@ const routes = [
   { path: '/courses/english', name: 'courses-english', component: Courses, props: { category: 'English' } },
   { path: '/courses/math', name: 'courses-math', component: Courses, props: { category: 'Math' } },
   { path: '/course/:id', name: 'course-detail', component: CourseDetail },
+  { path: '/course-details/:id', name: 'course-details-page', component: CourseDetailsPage },
   { path: '/subscribe/:id', name: 'subscribe', component: Subscribe },
   { path: '/auth', name: 'auth', component: Auth },
   { path: '/profile', name: 'profile', component: Profile },

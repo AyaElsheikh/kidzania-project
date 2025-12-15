@@ -133,7 +133,11 @@ body {
   align-items: center;
   justify-content: center;
   text-align: center;
-  background: linear-gradient(to left, #30d5c8 0%, #2ecc71 100%);
+  background-image: url('/public/assets/images/Explore\ Courses.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
 }
 
 .hero-title {

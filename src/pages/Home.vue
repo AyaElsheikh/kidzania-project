@@ -12,7 +12,7 @@
           <p class="hero-sub mb-4">
             Join us on a fun learning journey where every lesson becomes an unforgettable adventure.
           </p>
-          <router-link to="/courses" class="btn btn-light btn-lg fw-bold hero-cta">
+          <router-link to="/courses" class="btn btn-lg  hero-cta">
             Explore Now
           </router-link>
         </div>
@@ -59,9 +59,8 @@
   </section>
 
   <!-- Our Top Courses Section -->
-  <section class="top-courses-section position-relative overflow-hidden">
-    <img src="/assets/images/Bird.svg" alt="bird" class="decor-bird" />
-    <img src="/assets/images/Kite.svg" alt="kite" class="decor-kite" />
+  <section class="top-courses-section overflow-hidden">
+
     <div class="container position-relative">
       <h2 class="section-title text-center">Our Top Courses</h2>
       <p class="section-sub text-center">
@@ -76,7 +75,7 @@
               <span v-for="tag in course.tags" :key="tag" class="course-tag">{{ tag }}</span>
             </div>
             <p class="course-text">{{ course.desc }}</p>
-            <button class="course-btn">View Details</button>
+            <button class="course-btn" @click="viewCourseDetails(course)">View Details</button>
           </div>
         </div>
       </div>
@@ -203,6 +202,19 @@ const prevTestimonial = () => {
   currentTestimonial.value =
     (currentTestimonial.value - 1 + totalTestimonials) % totalTestimonials
 }
+
+// Map course titles to course IDs
+const courseMapping = {
+  'Learn Arabic': 'c1',
+  'Abc Learning': 'c2', 
+  '123 Learning': 'c3'
+}
+
+const viewCourseDetails = (course) => {
+  const courseId = courseMapping[course.title] || 'c1'
+  // Navigate to the CourseDetailsPage using Vue Router
+  window.open(`/course-details/${courseId}`, '_blank')
+}
 </script>
 
 <style scoped>
@@ -226,8 +238,11 @@ const prevTestimonial = () => {
 }
 
 .hero-cta {
-  border-radius: 999px;
+  border-radius: 12px;
   padding: 12px 26px;
+  color:white;
+  background-color:var(--primary);
+
 }
 
 .section-title {
@@ -292,8 +307,9 @@ const prevTestimonial = () => {
 }
 
 .top-courses-section {
-  background: #e7f6ff;
-  padding: 90px 0;
+  background: url('/assets/images/OurTopCourses.png') center/cover no-repeat;
+  padding:70px 90px 280px 90px;
+
 }
 
 .decor-bird {
@@ -360,7 +376,7 @@ const prevTestimonial = () => {
 }
 
 .course-btn {
-  background: #0b7fbb;
+  background: var( --primary-medium);
   color: #fff;
   border: none;
   border-radius: 999px;

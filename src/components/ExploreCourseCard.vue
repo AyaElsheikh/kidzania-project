@@ -16,9 +16,9 @@
       </p>
       <div class="course-footer">
         <hr class="course-divider" />
-        <router-link class="course-btn" :to="`/course/${course.id}`">
-          Add To My Courses
-        </router-link>
+        <button class="course-btn" @click="viewDetails">
+          View Details
+        </button>
       </div>
     </div>
   </div>
@@ -61,6 +61,11 @@ const tagColor = (tag) => {
   if (key.includes('math') || key.includes('lesson')) return 'tag-blue'
   if (key.includes('arabic') || key.includes('english')) return 'tag-yellow'
   return 'tag-yellow'
+}
+
+const viewDetails = () => {
+  // Navigate to the CourseDetailsPage using Vue Router
+  window.open(`/course-details/${props.course.id}`, '_blank')
 }
 </script>
 
