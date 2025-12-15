@@ -40,33 +40,10 @@
             </button>
           </div>
 
-          <ExploreCourseCard v-if="heroCourse" :course="heroCourse" />
+          <div class="courses-list">
+            <ExploreCourseCard v-for="course in pagedCourses" :key="course.id" :course="course" />
+          </div>
         </div>
-      </div>
-    </section>
-
-    <nav class="site-pagination" aria-label="Site pagination" v-if="totalPages > 1">
-      <div class="pagination-inner">
-        <button class="pg-arrow pg-prev" aria-label="Previous page" @click="prevPage">‹</button>
-        <div class="page-numbers" role="navigation" aria-label="Pages">
-          <button
-            v-for="page in totalPages"
-            :key="page"
-            class="page-num"
-            :class="{ active: currentPage === page }"
-            :data-page="page"
-            @click="setPage(page)"
-          >
-            {{ page }}
-          </button>
-        </div>
-        <button class="pg-arrow pg-next" aria-label="Next page" @click="nextPage">›</button>
-      </div>
-    </nav>
-
-    <section class="courses-list-section">
-      <div class="courses-list container">
-        <ExploreCourseCard v-for="course in pagedCourses" :key="course.id" :course="course" />
       </div>
     </section>
   </div>
@@ -119,8 +96,6 @@ const pagedCourses = computed(() => {
   const start = (currentPage.value - 1) * perPage
   return filteredCourses.value.slice(start, start + perPage)
 })
-const heroCourse = computed(() => pagedCourses.value[0] || filteredCourses.value[0] || null)
-
 const setFilter = (value) => {
   filterType.value = value
   currentPage.value = 1
@@ -182,6 +157,7 @@ body {
 .controls-section {
   width: 100%;
   padding: 2.5rem 1rem;
+  background: #ffffff;
 }
 .controls {
   max-width: 1100px;
@@ -239,7 +215,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.3rem;
+  gap: 0.6rem;
+  max-width: 720px;
+  width: 100%;
 }
 
 .controls-left {
@@ -299,13 +277,11 @@ body {
 }
 
 .courses-list {
-  max-width: 1100px;
-  margin: 1.5rem auto 3rem auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: flex-end;
-  padding: 0 1rem;
+  width: 100%;
 }
 
 .site-pagination {
