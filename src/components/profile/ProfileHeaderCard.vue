@@ -1,7 +1,7 @@
 <template>
   <div class="profile-card d-flex justify-content-between align-items-center mb-4">
     <div class="d-flex align-items-center gap-3">
-      <img src="https://i.pravatar.cc/100" class="profile-img" alt="profile">
+      <img src="/public/assets/images/child.png" class="profile-img" alt="profile">
       <div>
         <h4 class="mb-1">Kevin</h4>
         <span class="badge bg-success-subtle text-success">Level 2 (Grades 1-2)</span>
