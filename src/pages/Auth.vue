@@ -234,21 +234,19 @@ const onSubmit = () => {
     if (mode.value === 'login') {
       // admin shortcut
       if (email.value === 'admin@gmail.com' && password.value === 'admin123') {
-        if (!adminStore.admin) {
-          adminStore.setup({ name: 'Admin', username: 'admin@gmail.com', password: 'admin123' })
-        }
+        // Force setup to ensure these credentials work even if another admin exists
+        adminStore.setup({ name: 'Admin', username: 'admin@gmail.com', password: 'admin123' })
+        
         adminStore.login({ username: 'admin@gmail.com', password: 'admin123' })
-        const existingAdmin = auth.users.find((u) => u.email === 'admin@gmail.com')
-        if (!existingAdmin) {
-          auth.register({
-            name: 'Admin',
-            phone: '',
-            email: 'admin@gmail.com',
-            password: 'admin123'
-          })
-        } else {
-          auth.login({ email: 'admin@gmail.com', password: 'admin123' })
-        }
+        
+        // Also ensure user exists in auth store so header shows generic logged in state if needed
+        auth.loginOrRegister({
+          name: 'Admin',
+          phone: '0000000000',
+          email: 'admin@gmail.com',
+          password: 'admin123'
+        })
+        
         router.push('/admin')
         return
       }

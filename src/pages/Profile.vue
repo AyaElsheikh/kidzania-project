@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="profile-page">
     <header class="hero">
       <h1 class="hero-title"><span>My Profile</span></h1>
     </header>
@@ -18,8 +18,8 @@
           <AccountSettings />
         </div>
       </div>
-
-      <ProfileIllustration />  
+      
+      <img src="/public/assets/images/OBJECTS.png" alt="Profile" class="profile-image">
     </section>
   </div>
 </template>
@@ -28,12 +28,16 @@
 import ProfileHeaderCard from '@/components/profile/ProfileHeaderCard.vue'
 import LearningProgress from '@/components/profile/LearningProgress.vue'
 import AccountSettings from '@/components/profile/AccountSettings.vue'
-import ProfileIllustration from '@/components/profile/ProfileIllustration.vue'
 </script>
 
 <style scoped>
 * {
   box-sizing: border-box;
+}
+
+.profile-page {
+  background-color: #ffffff;
+  min-height: 100vh;
 }
 
 .hero {
@@ -43,8 +47,7 @@ import ProfileIllustration from '@/components/profile/ProfileIllustration.vue'
   align-items: center;
   justify-content: center;
   text-align: center;
-  /* Using Tests.png as placeholder or fallback since Profile.png is not available */
-  background-image: url('/public/assets/images/Tests.png'); 
+   background: linear-gradient(to right, #81DFFF, #90EE90);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -59,6 +62,13 @@ import ProfileIllustration from '@/components/profile/ProfileIllustration.vue'
 }
 .hero-title span {
   display: block;
+}
+
+.profile-image {
+  display: block;
+  margin: 2.5rem auto 0;
+  max-width: 100%;
+  height: auto;
 }
 
 @media (max-width: 480px) {
