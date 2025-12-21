@@ -8,7 +8,6 @@ import MyCourses from '@/pages/MyCourses.vue'
 import Subscribe from '@/pages/Subscribe.vue'
 import NotFound from '@/pages/NotFound.vue'
 import Auth from '@/pages/Auth.vue'
-import AdminLogin from '@/pages/admin/AdminLogin.vue'
 import AdminLayout from '@/pages/admin/AdminLayout.vue'
 import AdminDashboard from '@/pages/admin/AdminDashboard.vue'
 import AdminCourses from '@/pages/admin/AdminCourses.vue'
@@ -33,7 +32,6 @@ const routes = [
   { path: '/profile', name: 'profile', component: Profile },
   { path: '/tests', name: 'tests', component: Tests },
   { path: '/play', name: 'play', component: PlayWithUs },
-  { path: '/admin/login', name: 'admin-login', component: AdminLogin },
   {
     path: '/admin', component: AdminLayout, children: [
       { path: '', name: 'admin-dashboard', component: AdminDashboard },
@@ -53,8 +51,8 @@ const router = createRouter({
 router.beforeEach((to) => {
   if (to.path.startsWith('/admin')) {
     const admin = useAdminStore()
-    if (to.name !== 'admin-login' && !admin.loggedIn) {
-      return { name: 'admin-login' }
+    if (!admin.loggedIn) {
+      return { name: 'auth' }
     }
   }
 })

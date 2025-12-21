@@ -1,11 +1,11 @@
 <template>
   <div class="d-flex flex-column min-vh-100 bg-light">
-    <Header v-if="!isAuthPage" />
+    <Header v-if="!shouldHideLayout" />
     <main class="flex-grow-1">
       <router-view />
     </main>
-    <Footer v-if="!isAuthPage" />
-    <AdminBadge />
+    <Footer v-if="!shouldHideLayout" />
+    <AdminBadge v-if="!shouldHideLayout" />
   </div>
 </template>
 
@@ -20,5 +20,7 @@ i18n.load()
 import AdminBadge from '@/components/AdminBadge.vue'
 
 const route = useRoute()
-const isAuthPage = computed(() => ['auth', 'admin-login'].includes(route.name))
+const shouldHideLayout = computed(() => {
+  return route.name === 'auth' || route.path?.startsWith('/admin')
+})
 </script>

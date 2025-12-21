@@ -1,22 +1,35 @@
 <template>
-  <div class="min-h-screen grid grid-cols-1 md:grid-cols-[240px_1fr]">
-    <aside class="bg-white shadow-card p-4">
-      <h3 class="font-fredoka text-darkblue text-2xl mb-4">Admin</h3>
-      <nav class="flex flex-col gap-3">
-        <router-link to="/admin" class="btn-outline">Dashboard</router-link>
-        <router-link to="/admin/courses" class="btn-outline">Courses</router-link>
-        <router-link to="/admin/subscriptions" class="btn-outline">Subscriptions</router-link>
-        <router-link to="/admin/exams" class="btn-outline">Exams</router-link>
-        <router-link to="/" class="btn-outline">Website</router-link>
-      </nav>
-    </aside>
-    <main class="p-6 bg-water">
-      <router-view />
-    </main>
+  <div class="admin-wrapper">
+    <AdminSidebar />
+    <div class="main">
+      <AdminTopbar />
+      <div class="content">
+        <router-view />
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useAdminStore } from '@/stores/admin.js'
-const admin = useAdminStore()
+import AdminSidebar from '@/components/admin/AdminSidebar.vue'
+import AdminTopbar from '@/components/admin/AdminTopbar.vue'
 </script>
+
+<style scoped>
+.main {
+  margin-left: 240px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  transition: margin-left 0.3s;
+}
+
+.content {
+  padding: 100px 30px 30px;
+}
+
+@media (max-width: 768px) {
+  .main {
+    margin-left: 0;
+  }
+}
+</style>

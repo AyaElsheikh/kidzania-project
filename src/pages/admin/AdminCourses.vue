@@ -1,88 +1,462 @@
 <template>
-  <div>
-    <h2 class="section-title">Manage Courses</h2>
-    <form class="card grid grid-cols-1 md:grid-cols-2 gap-3 mb-6" @submit.prevent="save">
-      <input v-model="title_en" :placeholder="locale==='en' ? 'Title (EN)' : 'العنوان (إنجليزي)'" class="p-3 rounded-xl border" />
-      <input v-model="title_ar" :placeholder="locale==='en' ? 'Title (AR)' : 'العنوان (عربي)'" class="p-3 rounded-xl border" />
-      <input v-model="description_en" :placeholder="locale==='en' ? 'Description (EN)' : 'الوصف (إنجليزي)'" class="p-3 rounded-xl border col-span-1 md:col-span-2" />
-      <input v-model="description_ar" :placeholder="locale==='en' ? 'Description (AR)' : 'الوصف (عربي)'" class="p-3 rounded-xl border col-span-1 md:col-span-2" />
-      <select v-model="category" class="p-3 rounded-xl border">
-        <option>Arabic</option>
-        <option>English</option>
-        <option>Math</option>
-      </select>
-      <input v-model.number="price" type="number" placeholder="Price" class="p-3 rounded-xl border" />
-      <input v-model="thumbnail" placeholder="Thumbnail URL" class="p-3 rounded-xl border col-span-1 md:col-span-2" />
-      <div class="flex gap-3 col-span-1 md:col-span-2">
-        <button class="btn" type="submit">{{ editingId ? (locale==='en' ? 'Update Course' : 'تحديث الكورس') : (locale==='en' ? 'Add Course' : 'إضافة كورس') }}</button>
-        <button v-if="editingId" class="btn-outline" type="button" @click="resetForm">{{ locale==='en' ? 'Cancel' : 'إلغاء' }}</button>
-      </div>
-    </form>
+  <div class="courses-page">
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div v-for="c in courses" :key="c.id" class="card">
-        <img :src="c.thumbnail" class="w-full h-32 object-cover rounded-xl" />
-        <div class="mt-2 font-fredoka text-darkblue">{{ c.title_en || c.title }}</div>
-        <div class="text-sm text-gray-600">{{ c.category }} • ${{ c.price }}</div>
-        <div class="mt-3 flex gap-2">
-          <button class="btn-outline" @click="edit(c)">{{ locale==='en' ? 'Edit' : 'تعديل' }}</button>
-          <button class="btn" @click="remove(c.id)">{{ locale==='en' ? 'Delete' : 'حذف' }}</button>
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-start mb-4">
+      <div>
+        <h2>Courses Management</h2>
+        <p class="text-muted">
+          Manage learning content, track progress, and organize subjects.
+        </p>
+      </div>
+      <button class="btn btn-primary rounded-pill px-4" @click="openModal()">
+        <i class="bi bi-plus"></i> Add new course
+      </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-box mb-4">
+      <div class="row g-3 align-items-center">
+        <div class="col-md-6">
+          <div class="search-input">
+            <i class="bi bi-search"></i>
+            <input type="text" v-model="searchQuery" placeholder="search by title, subject or ID ...">
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <select class="form-select" v-model="filterSubject">
+            <option value="">All Subjects</option>
+            <option value="Math">Math</option>
+            <option value="Science">Science</option>
+            <option value="Arabic">Arabic</option>
+            <option value="English">English</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <select class="form-select" v-model="filterGrade">
+            <option value="">All Grades</option>
+            <option value="Grade 1-3">Grade 1-3</option>
+            <option value="Grade 3-4">Grade 3-4</option>
+            <option value="Grade 5+">Grade 5+</option>
+          </select>
         </div>
       </div>
     </div>
+
+    <!-- Table -->
+    <div class="table-card">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>COURSE NAME</th>
+            <th>SUBJECT</th>
+            <th>GRADE</th>
+            <th>MODULES</th>
+            <th class="text-end">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr v-for="course in paginatedCourses" :key="course.id">
+            <td>
+              <div class="course-info">
+                <img :src="course.thumbnail" alt="thumbnail" />
+                <div>
+                  <strong>{{ course.title_en || course.title }}</strong>
+                  <small>{{ course.category }}</small>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge" :class="getBadgeClass(course.category)">{{ course.category }}</span></td>
+            <td>{{ course.grade || 'Grade 1-3' }}</td> <!-- Default grade if missing -->
+            <td>{{ course.lessons ? course.lessons.length : 0 }} Lessons</td>
+            <td class="text-end actions">
+              <i class="bi bi-pencil" @click="openModal(course)"></i>
+              <i class="bi bi-trash" @click="remove(course.id)"></i>
+            </td>
+          </tr>
+          
+          <tr v-if="paginatedCourses.length === 0">
+            <td colspan="5" class="text-center py-4 text-muted">No courses found.</td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3" v-if="filteredCourses.length > 0">
+        <span class="text-muted">Showing <strong>{{ rangeStart }}–{{ rangeEnd }}</strong> of {{ filteredCourses.length }} results</span>
+
+        <ul class="pagination mb-0">
+          <li class="page-item" :class="{ disabled: currentPage === 1 }">
+            <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
+          </li>
+          <li 
+            v-for="page in totalPages" 
+            :key="page" 
+            class="page-item" 
+            :class="{ active: currentPage === page }">
+            <a class="page-link" href="#" @click.prevent="setPage(page)">{{ page }}</a>
+          </li>
+          <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+            <a class="page-link" href="#" @click.prevent="nextPage">Next</a>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+    
+    <!-- Add/Edit Modal Overlay (Simple implementation) -->
+    <div v-if="showModal" class="modal-overlay" @click.self="showModal = false">
+      <div class="modal-content-custom">
+        <h4 class="mb-3">{{ editingId ? 'Edit Course' : 'Add New Course' }}</h4>
+        <form @submit.prevent="save">
+           <div class="row g-3">
+             <div class="col-md-6">
+                <label class="form-label">Title (English)</label> 
+                <input v-model="form.title_en" class="form-control" required />
+             </div>
+             <div class="col-md-6">
+                <label class="form-label">Title (Arabic)</label> 
+                <input v-model="form.title_ar" class="form-control" />
+             </div>
+             
+             <div class="col-12">
+                <label class="form-label">Description (English)</label> 
+                <textarea v-model="form.description_en" class="form-control" rows="2"></textarea>
+             </div>
+             
+             <div class="col-12">
+                <label class="form-label">Description (Arabic)</label> 
+                <textarea v-model="form.description_ar" class="form-control" rows="2"></textarea>
+             </div>
+             
+             <div class="col-md-6">
+                <label class="form-label">Subject</label> 
+                <select v-model="form.category" class="form-select">
+                  <option>Math</option>
+                  <option>Science</option>
+                  <option>Arabic</option>
+                  <option>English</option>
+                </select>
+             </div>
+             
+             <div class="col-md-6">
+                <label class="form-label">Price</label> 
+                <input type="number" v-model="form.price" class="form-control" />
+             </div>
+             
+             <div class="col-12">
+                <label class="form-label">Thumbnail Image</label> 
+                <!-- File Input -->
+                <input type="file" @change="onFileChange" class="form-control" accept="image/*" />
+                
+                <!-- Preview -->
+                <div v-if="form.thumbnail" class="mt-2">
+                  <small class="text-muted d-block mb-1">Preview:</small>
+                  <img :src="form.thumbnail" alt="Preview" class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee;">
+                </div>
+             </div>
+           </div>
+           
+           <div class="d-flex justify-content-end gap-2 mt-4">
+             <button type="button" class="btn btn-secondary" @click="showModal = false">Cancel</button>
+             <button type="submit" class="btn btn-primary">Save Course</button>
+           </div>
+        </form>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, reactive } from 'vue'
 import { useCoursesStore } from '@/stores/courses.js'
-import { useI18nStore } from '@/stores/i18n.js'
+
 const store = useCoursesStore()
-onMounted(() => store.load())
-const title_en = ref('')
-const title_ar = ref('')
-const description_en = ref('')
-const description_ar = ref('')
-const category = ref('Arabic')
-const price = ref(29)
-const thumbnail = ref('/assets/arabic.svg')
-const courses = computed(() => store.courses)
+
+// Load data
+onMounted(() => {
+  store.load()
+})
+
+// Filters
+const searchQuery = ref('')
+const filterSubject = ref('')
+const filterGrade = ref('')
+
+// Pagination
+const currentPage = ref(1)
+const itemsPerPage = 5
+
+// Computed list
+const filteredCourses = computed(() => {
+  let list = store.courses
+  
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(c => 
+      (c.title_en?.toLowerCase() || '').includes(q) ||
+      (c.title?.toLowerCase() || '').includes(q) ||
+      (c.category?.toLowerCase() || '').includes(q)
+    )
+  }
+  
+  if (filterSubject.value) {
+    list = list.filter(c => c.category === filterSubject.value)
+  }
+  
+  // Note: Grade logic is presumptive as it wasn't in original data, 
+  // but we can add it to the form to make it real.
+  if (filterGrade.value) {
+     // If course has 'grade' property
+     list = list.filter(c => c.grade === filterGrade.value)
+  }
+  
+  return list
+})
+
+const totalPages = computed(() => Math.ceil(filteredCourses.value.length / itemsPerPage))
+
+const paginatedCourses = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredCourses.value.slice(start, end)
+})
+
+const rangeStart = computed(() => filteredCourses.value.length === 0 ? 0 : (currentPage.value - 1) * itemsPerPage + 1)
+const rangeEnd = computed(() => Math.min(currentPage.value * itemsPerPage, filteredCourses.value.length))
+
+// Pagination Methods
+const prevPage = () => { if (currentPage.value > 1) currentPage.value-- }
+const nextPage = () => { if (currentPage.value < totalPages.value) currentPage.value++ }
+const setPage = (p) => currentPage.value = p
+
+// Helper
+const getBadgeClass = (category) => {
+  switch (category) {
+    case 'Math': return 'badge-math'
+    case 'Science': return 'badge-science'
+    case 'Arabic': return 'badge-arabic'
+    case 'English': return 'badge-english'
+    default: return 'badge-english'
+  }
+}
+
+// Modal Logic
+const showModal = ref(false)
 const editingId = ref(null)
-const i18n = useI18nStore()
-const locale = i18n.locale
+const form = reactive({
+  title_en: '',
+  title_ar: '',
+  description_en: '',
+  category: 'Math',
+  price: 0,
+  thumbnail: '',
+  grade: 'Grade 1-3' // Default
+})
+
+const openModal = (course = null) => {
+  if (course) {
+    editingId.value = course.id
+    form.title_en = course.title_en || course.title
+    form.title_ar = course.title_ar || ''
+    form.description_en = course.description_en || course.description || ''
+    form.description_ar = course.description_ar || ''
+    form.category = course.category
+    form.price = course.price
+    form.thumbnail = course.thumbnail
+    form.grade = course.grade || 'Grade 1-3'
+  } else {
+    editingId.value = null
+    form.title_en = ''
+    form.title_ar = ''
+    form.description_en = ''
+    form.description_ar = ''
+    form.category = 'Math'
+    form.price = 0
+    form.thumbnail = '/assets/math.png' // Default placeholder
+    form.grade = 'Grade 1-3'
+  }
+  showModal.value = true
+}
+
+const onFileChange = (e) => {
+  const file = e.target.files[0]
+  if (file) {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      form.thumbnail = e.target.result // Base64 string
+    }
+    reader.readAsDataURL(file)
+  }
+}
+
 const save = () => {
-  const course = {
+  const courseData = {
     id: editingId.value || `c${Date.now()}`,
-    title: title_en.value,
-    title_en: title_en.value,
-    title_ar: title_ar.value,
-    description: description_en.value,
-    description_en: description_en.value,
-    description_ar: description_ar.value,
-    category: category.value,
-    price: price.value,
-    thumbnail: thumbnail.value,
+    title: form.title_en,
+    title_en: form.title_en,
+    title_ar: form.title_ar,
+    description: form.description_en,
+    description_en: form.description_en,
+    description_ar: form.description_ar,
+    category: form.category,
+    price: form.price,
+    thumbnail: form.thumbnail,
+    grade: form.grade,
+    // defaults
     age: '4-8',
     seats: 10,
-    lessons: []
+    lessons: [] 
   }
+  
   if (editingId.value) {
-    store.updateCourse(course)
+    store.updateCourse(courseData)
   } else {
-    store.addCourse(course)
+    store.addCourse(courseData)
   }
-  resetForm()
+  showModal.value = false
 }
-const edit = (c) => {
-  editingId.value = c.id
-  title_en.value = c.title_en || c.title || ''
-  title_ar.value = c.title_ar || ''
-  description_en.value = c.description_en || c.description || ''
-  description_ar.value = c.description_ar || ''
-  category.value = c.category
-  price.value = c.price
-  thumbnail.value = c.thumbnail
+
+const remove = (id) => {
+  if (confirm('Are you sure you want to delete this course?')) {
+    store.deleteCourse(id)
+  }
 }
-const remove = (id) => { if (confirm(locale==='en' ? 'Delete course?' : 'حذف الكورس؟')) store.deleteCourse(id) }
-const resetForm = () => { editingId.value = null; title_en.value = title_ar.value = description_en.value = description_ar.value = ''; category.value = 'Arabic'; price.value = 29; thumbnail.value = '/assets/arabic.svg' }
 </script>
+
+<style scoped>
+/* ===== Courses Page ===== */
+.courses-page {
+  /* Using standard Bootstrap font logic inherited from App or simplified */
+  font-family: 'Fredoka', sans-serif;
+}
+
+.filter-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 18px;
+}
+
+.search-input {
+  position: relative;
+}
+.search-input i {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+}
+.search-input input {
+  width: 100%;
+  padding: 12px 12px 12px 40px;
+  border-radius: 14px;
+  border: 1px solid #eee;
+}
+
+.table-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 10px 20px 20px;
+}
+
+.table thead th {
+  font-size: 13px;
+  color: #6b7280;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+}
+
+.course-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.course-info img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+.course-info small {
+  display: block;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* Badges */
+.badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.badge-math { background: #e0f2fe; color: #0284c7; }
+.badge-science { background: #dcfce7; color: #16a34a; }
+.badge-arabic { background: #f3e8ff; color: #9333ea; }
+.badge-english { background: #fff7ed; color: #ea580c; }
+
+.actions i {
+  cursor: pointer;
+  margin-left: 12px;
+  color: #64748b;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+.actions i:hover {
+  color: #00aaff;
+}
+.actions i.bi-trash:hover {
+  color: #dc3545;
+}
+
+/* Pagination */
+.pagination .page-link {
+  color: #6b7280;
+  border: none;
+  margin: 0 4px;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pagination .page-item.active .page-link {
+  background-color: #00aaff;
+  color: #fff;
+}
+.pagination .page-item.disabled .page-link {
+  color: #ccc;
+  cursor: not-allowed;
+}
+.pagination .page-link:hover:not(.active) {
+  background-color: #f1f5f9;
+}
+
+/* Modal Simple Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-content-custom {
+  background: #fff;
+  padding: 30px;
+  border-radius: 20px;
+  width: 600px;
+  max-width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+</style>
