@@ -1,23 +1,70 @@
 <template>
-  <section class="container mx-auto px-4 py-10">
-    <h2 class="section-title">{{ t('profile.title') }}</h2>
-    <div v-if="courses.length" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <CourseCard v-for="c in courses" :key="c.id" :course="c" />
-    </div>
-    <p v-else>{{ t('profile.empty') }}</p>
-  </section>
+  <div>
+    <header class="hero">
+      <h1 class="hero-title"><span>My Profile</span></h1>
+    </header>
+
+    <section class="container py-5">
+      <ProfileHeaderCard />
+      
+      <div class="row g-4">
+        <!-- Learning Progress -->
+        <div class="col-lg-8">
+          <LearningProgress />
+        </div>
+
+        <!-- Account Settings -->
+        <div class="col-lg-4">
+          <AccountSettings />
+        </div>
+      </div>
+
+      <ProfileIllustration />  
+    </section>
+  </div>
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
-import { useCoursesStore } from '@/stores/courses.js'
-import { useSubscriptionStore } from '@/stores/subscription.js'
-import CourseCard from '@/components/CourseCard.vue'
-import { useI18nStore } from '@/stores/i18n.js'
-const store = useCoursesStore()
-const sub = useSubscriptionStore()
-onMounted(() => { store.load(); sub.load() })
-const courses = computed(() => store.courses.filter(c => sub.isSubscribed(c.id)))
-const i18n = useI18nStore()
-const t = i18n.t
+import ProfileHeaderCard from '@/components/profile/ProfileHeaderCard.vue'
+import LearningProgress from '@/components/profile/LearningProgress.vue'
+import AccountSettings from '@/components/profile/AccountSettings.vue'
+import ProfileIllustration from '@/components/profile/ProfileIllustration.vue'
 </script>
+
+<style scoped>
+* {
+  box-sizing: border-box;
+}
+
+.hero {
+  width: 100%;
+  height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* Using Tests.png as placeholder or fallback since Profile.png is not available */
+  background-image: url('/public/assets/images/Tests.png'); 
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hero-title {
+  color: #ffffff;
+  margin: 0;
+  font-weight: 800;
+  line-height: 1;
+ font-size: clamp(2rem, 6vw, 4.5rem);
+}
+.hero-title span {
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .hero {
+    height: 45vh;
+    padding: 1rem;
+  }
+}
+</style>

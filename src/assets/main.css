@@ -1,18 +1,18 @@
 :root {
   /* Primary Color - Main */
   --primary: #033B62;
-  
+
   /* Primary Colors */
   --primary-light: #81DFFF;
   --primary-medium: #00BFFF;
   --primary-pale: #D9F5FF;
-  
+
   /* Secondary Colors */
   --secondary-green: #90EE90;
   --secondary-pink: #FFC0CB;
   --secondary-salmon: #FFA07A;
   --secondary-gold: #FFD700;
-  
+
   /* Legacy support */
   --darkblue: #033B62;
   --pale-cyan: #81DFFF;
@@ -22,28 +22,48 @@
 }
 
 body {
-  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: 'Fredoka', 'Segoe UI', Roboto, "Helvetica Neue", Arial, sans-serif;
   background-color: #ffffff;
 }
 
 .section-title {
-  font-family: 'Fredoka', 'Segoe UI', sans-serif;
+  /* font-family: 'Fredoka', 'Segoe UI', sans-serif; -- Inherited globally */
   font-size: clamp(2rem, 3vw, 2.5rem);
   color: var(--primary);
   margin-bottom: 1rem;
 }
 
-.text-darkblue { color: var(--primary) !important; }
-.bg-darkblue { background-color: var(--primary) !important; }
-.bg-pink { background-color: var(--secondary-pink) !important; }
-.bg-lightGreen { background-color: var(--secondary-green) !important; }
-.bg-lightSalmon { background-color: var(--secondary-salmon) !important; }
-.bg-paleCyan { background-color: var(--primary-pale) !important; }
-.bg-gold { background-color: var(--secondary-gold) !important; }
+.text-darkblue {
+  color: var(--primary) !important;
+}
+
+.bg-darkblue {
+  background-color: var(--primary) !important;
+}
+
+.bg-pink {
+  background-color: var(--secondary-pink) !important;
+}
+
+.bg-lightGreen {
+  background-color: var(--secondary-green) !important;
+}
+
+.bg-lightSalmon {
+  background-color: var(--secondary-salmon) !important;
+}
+
+.bg-paleCyan {
+  background-color: var(--primary-pale) !important;
+}
+
+.bg-gold {
+  background-color: var(--secondary-gold) !important;
+}
 
 .card-soft {
   border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .hero-shape {
@@ -61,7 +81,7 @@ body {
   background-color: var(--primary);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   padding: 12px 0;
-  font-family: 'Fredoka', 'Segoe UI', sans-serif;
+  /* font-family: 'Fredoka', 'Segoe UI', sans-serif; */
 }
 
 .kidzademy-navbar .navbar-nav .nav-link {

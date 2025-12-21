@@ -7,15 +7,23 @@
       "title_en": "Arabic for Kids",
       "category": "Arabic",
       "price": 29,
-      "thumbnail": "/assets/arabic.svg",
+      "thumbnail": "/assets/images/topcourses1.png",
       "description": "تعليم بسيط للأطفال",
       "description_ar": "تعليم بسيط للأطفال",
       "description_en": "Simple Arabic learning for kids",
       "age": "4-6",
       "seats": 10,
       "lessons": [
-        { "id": "l1", "title": "الحروف 1", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" },
-        { "id": "l2", "title": "الحروف 2", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" }
+        {
+          "id": "l1",
+          "title": "الحروف 1",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "الحروف 2",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
       ]
     },
     {
@@ -25,15 +33,23 @@
       "title_en": "English Basics",
       "category": "English",
       "price": 29,
-      "thumbnail": "/assets/english.svg",
+      "thumbnail": "/assets/images/topcourses2.png",
       "description": "Learn simple English",
       "description_ar": "تعلم الإنجليزية بأسلوب بسيط",
       "description_en": "Learn simple English",
       "age": "5-7",
       "seats": 10,
       "lessons": [
-        { "id": "l1", "title": "ABC", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" },
-        { "id": "l2", "title": "Words", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" }
+        {
+          "id": "l1",
+          "title": "ABC",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "Words",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
       ]
     },
     {
@@ -43,15 +59,23 @@
       "title_en": "Fun Math",
       "category": "Math",
       "price": 29,
-      "thumbnail": "/assets/math.svg",
+      "thumbnail": "/assets/images/math.png",
       "description": "Numbers and games",
       "description_ar": "الأرقام والألعاب",
       "description_en": "Numbers and games",
       "age": "4-8",
       "seats": 12,
       "lessons": [
-        { "id": "l1", "title": "Counting", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" },
-        { "id": "l2", "title": "Addition", "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4" }
+        {
+          "id": "l1",
+          "title": "Counting",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "Addition",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
       ]
     }
   ]

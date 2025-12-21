@@ -226,7 +226,7 @@ const viewCourseDetails = (course) => {
 }
 
 .hero-heading {
-  font-family: 'Fredoka', 'Segoe UI', sans-serif;
+  /* font-family: 'Fredoka', 'Segoe UI', sans-serif; */
   font-weight: 800;
   font-size: clamp(2.4rem, 5vw, 3.5rem);
   line-height: 1.05;
@@ -246,7 +246,7 @@ const viewCourseDetails = (course) => {
 }
 
 .section-title {
-  font-family: 'Fredoka', 'Segoe UI', sans-serif;
+  /* font-family: 'Fredoka', 'Segoe UI', sans-serif; */
   font-weight: 800;
   color: #0b2a4a;
 }

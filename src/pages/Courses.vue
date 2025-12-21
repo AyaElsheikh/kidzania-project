@@ -122,13 +122,12 @@ watch([filterType, selectedAges], () => {
 html,
 body {
   height: 100%;
-  margin: 0;
-  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0; 
 }
 
 .hero {
   width: 100%;
-  height: 60vh;
+  height: 90vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,7 +144,7 @@ body {
   margin: 0;
   font-weight: 800;
   line-height: 1;
-  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-size: clamp(2rem, 6vw, 4.5rem);
 }
 .hero-title span {
   display: block;

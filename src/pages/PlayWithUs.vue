@@ -1,4 +1,7 @@
 <template>
+  <header class="hero">
+    <h1 class="hero-title"><span>Play</span><span>With Us</span></h1>
+  </header>
   <section class="container py-5">
     <h2 class="section-title text-center">{{ t('play.title') }}</h2>
     <p class="text-center text-muted mb-4">{{ t('play.subtitle') }}</p>
@@ -28,9 +31,51 @@
   </section>
 </template>
 
+
+
 <script setup>
 import { useI18nStore } from '@/stores/i18n.js'
 const i18n = useI18nStore()
 const t = i18n.t
 </script>
+
+
+
+<style scoped>
+* {
+  box-sizing: border-box;
+}
+
+.hero {
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-image: url('/public/assets/images/Play\ with\ us.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.hero-title {
+  color: #ffffff;
+  margin: 0;
+  font-weight: 800;
+  line-height: 1;
+ font-size: clamp(2rem, 6vw, 4.5rem);
+}
+.hero-title span {
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .hero {
+    height: 45vh;
+    padding: 1rem;
+  }
+}
+</style>
+
 

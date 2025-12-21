@@ -464,7 +464,7 @@ const viewOtherCourse = (courseId) => {
   padding: 2rem;
   text-align: center;
   color: #033B62;
-  font-family: 'Fredoka', 'Segoe UI', sans-serif;
+  /* font-family: 'Fredoka', 'Segoe UI', sans-serif; */
   font-size: 1.1rem;
   margin-top: 15px;
 }

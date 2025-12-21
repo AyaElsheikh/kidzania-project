@@ -40,9 +40,9 @@
             </li>
             <li class="nav-item">
               <router-link
-                to="/profile"
+                to="/my-courses"
                 class="nav-link"
-                :class="{ active: $route.path === '/profile' }"
+                :class="{ active: $route.path === '/my-courses' }"
               >
                 {{ t('nav.myCourses') }}
               </router-link>
@@ -67,6 +67,11 @@
             </li>
             <li class="nav-item">
               <LanguageSwitch />
+            </li>
+            <li class="nav-item ms-lg-2" v-if="admin.loggedIn">
+              <router-link to="/admin" class="btn btn-warning text-dark fw-bold">
+                Admin
+              </router-link>
             </li>
             <li class="nav-item ms-lg-2">
               <router-link to="/auth" class="btn register-btn text-white fw-semibold">
@@ -99,6 +104,8 @@ import LanguageSwitch from '@/components/LanguageSwitch.vue'
 
 const i18n = useI18nStore()
 const auth = useAuthStore()
+import { useAdminStore } from '@/stores/admin.js'
+const admin = useAdminStore()
 const route = useRoute()
 const t = i18n.t
 auth.load()

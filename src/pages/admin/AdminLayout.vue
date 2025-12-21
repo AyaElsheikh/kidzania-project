@@ -7,6 +7,7 @@
         <router-link to="/admin/courses" class="btn-outline">Courses</router-link>
         <router-link to="/admin/subscriptions" class="btn-outline">Subscriptions</router-link>
         <router-link to="/admin/exams" class="btn-outline">Exams</router-link>
+        <router-link to="/" class="btn-outline">Website</router-link>
       </nav>
     </aside>
     <main class="p-6 bg-water">
