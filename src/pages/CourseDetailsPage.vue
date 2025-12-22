@@ -1,7 +1,7 @@
 <template>
   <div class="course-details-container">
     <!-- Hero Section -->
-    <section class="hero-section" v-if="course">
+    <section class="hero-section position-relative overflow-hidden" v-if="course">
       <div class="container">
         <div class="hero-content">
           <div class="hero-text">
@@ -19,12 +19,18 @@
           </div>
         </div>
       </div>
+      <!-- Wave Divider -->
+      <div class="wave-divider">
+        <svg viewBox="0 0 1440 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,75 C240,0 480,150 720,75 C960,0 1200,150 1440,75 L1440,150 L0,150 Z" fill="white"/>
+        </svg>
+      </div>
     </section>
 
     <!-- Course Overview Section -->
     <section class="course-overview-section" v-if="course">
       <div class="course-overview-container">
-        <h2 class="section-title">Course Overview</h2>
+        <h2 class="section-title">{{ t('courseDetail.overview') }}</h2>
         <div class="course-content">
           <div class="course-image">
             <img :src="course.thumbnail" :alt="displayTitle" class="group-image">
@@ -39,7 +45,7 @@
     <!-- Course Outline Section -->
     <section class="course-outline-section" v-if="course">
       <div class="course-outline-container">
-        <h2 class="outline-title">Course Outline</h2>
+        <h2 class="outline-title">{{ t('courseDetail.outline') }}</h2>
         <div class="outline-accordion accordion" id="courseAccordion">
           <div v-for="(lesson, index) in course.lessons" :key="lesson.id" class="accordion-item">
             <h2 class="accordion-header" :id="`heading${index}`">
@@ -75,7 +81,7 @@
                   <VideoPlayer :course-id="course.id" :video-url="lesson.videoUrl" />
                 </div>
                 <div v-else class="locked-lesson">
-                  🔒 يجب الاشتراك لمشاهدة هذا الدرس
+                  🔒 {{ t('courseDetail.lockedLesson') }}
                 </div>
               </div>
             </div>
@@ -87,7 +93,7 @@
     <!-- Other Courses Section -->
     <section class="other-courses-section">
       <div class="other-courses-container">
-        <h2 class="other-courses-title">Other courses to learn</h2>
+        <h2 class="other-courses-title">{{ t('courseDetail.otherCourses') }}</h2>
         <div class="courses-grid">
           <div v-for="otherCourse in otherCourses" :key="otherCourse.id" class="course-card">
             <div class="course-image-container">
@@ -95,13 +101,13 @@
             </div>
             <h3 class="course-card-title">{{ getDisplayTitle(otherCourse) }}</h3>
             <div class="tags-container">
-              <span class="tag tag-music">Music</span>
-              <span class="tag tag-games">Games</span>
-              <span class="tag tag-puzzles">Puzzles</span>
+              <span class="tag tag-music">{{ t('course.tag.music') }}</span>
+              <span class="tag tag-games">{{ t('course.tag.games') }}</span>
+              <span class="tag tag-puzzles">{{ t('course.tag.puzzles') }}</span>
             </div>
             <p class="course-card-description">{{ getDisplayDesc(otherCourse) }}</p>
             <div class="course-card-divider"></div>
-            <button class="course-card-btn" @click="viewOtherCourse(otherCourse.id)">View Details</button>
+            <button class="course-card-btn" @click="viewOtherCourse(otherCourse.id)">{{ t('courseDetail.viewDetails') }}</button>
           </div>
         </div>
       </div>
@@ -160,7 +166,7 @@ const displayDesc = computed(() => {
 
 const displaySubtitle = computed(() => {
   if (!course.value) return ''
-  return `25% off — make ${displayTitle.value.toLowerCase()} easier for your child!`
+  return t('courseDetail.subtitle', { title: displayTitle.value.toLowerCase() })
 })
 
 const categoryText = computed(() => {
@@ -184,14 +190,28 @@ const getDisplayDesc = (courseItem) => {
 
 const getDefaultDescription = (lessonTitle) => {
   const descriptions = {
-    'الحروف 1': 'تعلم الحروف العربية الأساسية من خلال أنشطة تفاعلية ممتعة وألعاب تعليمية.',
-    'الحروف 2': 'استكمال تعلم الحروف العربية مع التركيز على النطق الصحيح والكتابة.',
-    'ABC': 'Learn the English alphabet through fun songs, games, and interactive activities.',
-    'Words': 'Build vocabulary with simple English words and their meanings through visual learning.',
-    'Counting': 'Learn to count numbers from 1 to 20 with fun activities and visual aids.',
-    'Addition': 'Discover basic addition through colorful illustrations and playful examples.'
+    ar: {
+      'الحروف 1': 'تعلم الحروف العربية الأساسية من خلال أنشطة تفاعلية ممتعة وألعاب تعليمية.',
+      'الحروف 2': 'استكمال تعلم الحروف العربية مع التركيز على النطق الصحيح والكتابة.',
+      'ABC': 'تعلم الأبجدية الإنجليزية من خلال الأغاني الممتعة والألعاب والأنشطة التفاعلية.',
+      'Words': 'بناء المفردات مع كلمات إنجليزية بسيطة ومعانيها من خلال التعلم البصري.',
+      'Counting': 'تعلم العد من 1 إلى 20 مع أنشطة ممتعة ووسائل بصرية.',
+      'Addition': 'اكتشف الجمع الأساسي من خلال الرسوم التوضيحية الملونة والأمثلة المرحة.'
+    },
+    en: {
+      'الحروف 1': 'Learn basic Arabic letters through fun interactive activities and educational games.',
+      'الحروف 2': 'Continue learning Arabic letters with focus on correct pronunciation and writing.',
+      'ABC': 'Learn the English alphabet through fun songs, games, and interactive activities.',
+      'Words': 'Build vocabulary with simple English words and their meanings through visual learning.',
+      'Counting': 'Learn to count numbers from 1 to 20 with fun activities and visual aids.',
+      'Addition': 'Discover basic addition through colorful illustrations and playful examples.'
+    }
   }
-  return descriptions[lessonTitle] || 'تعلم مفاهيم جديدة من خلال أنشطة تفاعلية ممتعة ومناسبة للأطفال.'
+  const defaultDesc = {
+    ar: 'تعلم مفاهيم جديدة من خلال أنشطة تفاعلية ممتعة ومناسبة للأطفال.',
+    en: 'Learn new concepts through fun and age-appropriate interactive activities.'
+  }
+  return descriptions[i18n.locale]?.[lessonTitle] || descriptions[i18n.locale === 'ar' ? 'en' : 'ar']?.[lessonTitle] || defaultDesc[i18n.locale] || defaultDesc.en
 }
 
 const viewOtherCourse = (courseId) => {
@@ -214,6 +234,23 @@ const viewOtherCourse = (courseId) => {
   align-items: center;
   padding: 60px 0;
   margin: 0;
+}
+
+.wave-divider {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.wave-divider svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .hero-content {

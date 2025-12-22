@@ -1,13 +1,16 @@
 <template>
   <div class="profile-page">
     <header class="hero">
-      <h1 class="hero-title"><span>My Profile</span></h1>
+      <div class="hero-content">
+        <h1 class="hero-title">My profile</h1>
+        <p class="hero-subtitle">Keep learning and growing, explorer!</p>
+      </div>
     </header>
 
-    <section class="container py-5">
+    <section class="container py-3">
       <ProfileHeaderCard />
       
-      <div class="row g-4">
+      <div class="row g-3">
         <!-- Learning Progress -->
         <div class="col-lg-8">
           <LearningProgress />
@@ -19,7 +22,7 @@
         </div>
       </div>
       
-      <img src="/public/assets/images/OBJECTS.png" alt="Profile" class="profile-image">
+      <ProfileIllustration />
     </section>
   </div>
 </template>
@@ -28,6 +31,7 @@
 import ProfileHeaderCard from '@/components/profile/ProfileHeaderCard.vue'
 import LearningProgress from '@/components/profile/LearningProgress.vue'
 import AccountSettings from '@/components/profile/AccountSettings.vue'
+import ProfileIllustration from '@/components/profile/ProfileIllustration.vue'
 </script>
 
 <style scoped>
@@ -42,39 +46,53 @@ import AccountSettings from '@/components/profile/AccountSettings.vue'
 
 .hero {
   width: 100%;
-  height: 60vh;
+  min-height: 200px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-   background: linear-gradient(to right, #81DFFF, #90EE90);
+  background: linear-gradient(to right, #81DFFF, #90EE90);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  padding: 40px 20px;
+  position: relative;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
 }
 
 .hero-title {
   color: #ffffff;
   margin: 0;
   font-weight: 800;
-  line-height: 1;
- font-size: clamp(2rem, 6vw, 4.5rem);
-}
-.hero-title span {
-  display: block;
+  line-height: 1.2;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  margin-bottom: 8px;
 }
 
-.profile-image {
-  display: block;
-  margin: 2.5rem auto 0;
-  max-width: 100%;
-  height: auto;
+.hero-subtitle {
+  color: #ffffff;
+  margin: 0;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-weight: 400;
+  opacity: 0.95;
 }
 
 @media (max-width: 480px) {
   .hero {
-    height: 45vh;
-    padding: 1rem;
+    min-height: 180px;
+    padding: 30px 15px;
+  }
+  
+  .hero-title {
+    font-size: 1.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 0.85rem;
   }
 }
 </style>

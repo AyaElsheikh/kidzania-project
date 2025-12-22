@@ -1,10 +1,10 @@
 <template>
-  <div class="text-center mt-5">
-    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" 
+  <div class="text-center mt-4">
+    <img src="/public/assets/images/OBJECTS.png" 
          class="img-fluid mb-3 illustration" alt="illustration">
 
-    <h5>New adventures coming soon!</h5>
-    <p class="text-muted small">
+    <h5 class="adventure-title">New adventures coming soon!</h5>
+    <p class="adventure-text">
       more lessons, fun tests, and educational games are on the way.<br>
       get ready to explore and have fun!
     </p>
@@ -13,10 +13,36 @@
 
 <style scoped>
 .illustration {
-  max-width: 300px;
-  opacity: 0.9;
+  max-width: 100%;
+  height: auto;
+  opacity: 0.95;
 }
-p {
-    line-height: 1.6;
+
+.adventure-title {
+  color: var(--primary, #033B62);
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.adventure-text {
+  color: #6c757d;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .illustration {
+    max-width: 90%;
+  }
+  
+  .adventure-title {
+    font-size: 1.1rem;
+  }
+  
+  .adventure-text {
+    font-size: 0.85rem;
+  }
 }
 </style>

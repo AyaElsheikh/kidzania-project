@@ -3,7 +3,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark kidzademy-navbar py-3">
       <div class="container d-flex align-items-center">
         <router-link to="/" class="navbar-brand d-flex align-items-center">
-          <img src="/assets/Logo.png" alt="Kidzademy" style="height: 48px;" class="me-2" />
+          <img src="/assets/Logo.png" alt="Kidzademy" class="navbar-logo" />
         </router-link>
 
         <button
@@ -19,7 +19,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="mainNav">
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center gap-lg-3">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-lg-center navbar-nav-list">
             <li class="nav-item">
               <router-link
                 to="/"
@@ -68,17 +68,17 @@
             <li class="nav-item">
               <LanguageSwitch />
             </li>
-            <li class="nav-item ms-lg-2" v-if="admin.loggedIn">
+            <li class="nav-item navbar-spacing" v-if="admin.loggedIn">
               <router-link to="/admin" class="btn btn-warning text-dark fw-bold">
-                Admin
+                {{ t('nav.admin') }}
               </router-link>
             </li>
-            <li class="nav-item ms-lg-2">
+            <li class="nav-item navbar-spacing">
               <router-link to="/auth" class="btn register-btn text-white fw-semibold">
-                {{ auth.isAuthenticated ? 'Login' : 'Sign up' }}
+                {{ auth.isAuthenticated ? t('nav.loginButton') : t('nav.signupButton') }}
               </router-link>
             </li>
-            <li class="nav-item ms-lg-2">
+            <li class="nav-item navbar-spacing">
               <router-link
                 to="/profile"
                 class="profile-icon"
@@ -110,3 +110,44 @@ const route = useRoute()
 const t = i18n.t
 auth.load()
 </script>
+
+<style scoped>
+.navbar-logo {
+  height: var(--navbar-logo-size, clamp(2rem, 2rem + 1.5vw, 3rem));
+  width: auto;
+  margin-right: clamp(1%, 1% + 0.5vw, 2%);
+  transition: height 0.3s ease;
+}
+
+.navbar-nav-list {
+  gap: var(--navbar-gap, clamp(0.15rem, 0.15rem + 0.4vw, 0.5rem));
+  transition: gap 0.3s ease;
+}
+
+.navbar-spacing {
+  margin-left: var(--navbar-gap, clamp(0.25rem, 0.25rem + 0.4vw, 0.5rem));
+  transition: margin 0.3s ease;
+}
+
+/* Smooth transitions for responsive changes */
+.kidzademy-navbar * {
+  transition: font-size 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+}
+
+@media (max-width: 991px) {
+  .navbar-nav-list {
+    gap: var(--navbar-gap, 0.3rem);
+  }
+  
+  .navbar-spacing {
+    margin-left: 0;
+    margin-top: 0.3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-logo {
+    margin-right: 1%;
+  }
+}
+</style>

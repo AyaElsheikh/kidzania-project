@@ -1,5 +1,5 @@
 <template>
-  <div class="profile-card d-flex justify-content-between align-items-center mb-4">
+  <div class="profile-card d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex align-items-center gap-3">
       <img src="/public/assets/images/child.png" class="profile-img" alt="profile">
       <div>
@@ -15,16 +15,16 @@
 <style scoped>
 .profile-card {
   background: #fff;
-  padding: 20px 25px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 16px 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
 .profile-img {
-  width: 80px;
-  height: 80px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
-  border: 4px solid var(--secondary-green, #5fd38d);
+  border: 3px solid var(--secondary-green, #5fd38d);
 }
 
 @media (max-width: 576px) {

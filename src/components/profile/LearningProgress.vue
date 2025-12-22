@@ -1,6 +1,6 @@
 <template>
   <div class="card-custom h-100">
-    <h5 class="mb-4">Your learning progress</h5>
+    <h5 class="mb-3">Your learning progress</h5>
 
     <div class="d-flex justify-content-around text-center mb-3">
       <div>
@@ -14,12 +14,12 @@
     </div>
 
     <p class="text-center small">65% Completed</p>
-    <div class="progress mb-4">
+    <div class="progress mb-3">
       <div class="progress-bar" style="width:65%"></div>
     </div>
 
     <div class="text-center">
-      <button class="btn btn-success-custom rounded-pill px-5">Continue learning</button>
+      <button class="btn btn-success-custom rounded-pill px-4">Continue learning</button>
     </div>
   </div>
 </template>
@@ -27,19 +27,20 @@
 <style scoped>
 .card-custom {
   background: #fff;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 18px 20px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
 
 .text-primary-custom {
   color: var(--primary, #033B62);
   font-weight: bold;
+  font-size: 1.75rem;
 }
 
 .progress {
-  height: 10px;
-  border-radius: 10px;
+  height: 8px;
+  border-radius: 8px;
   background-color: #e9ecef;
 }
 

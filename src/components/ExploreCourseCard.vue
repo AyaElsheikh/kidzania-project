@@ -17,7 +17,7 @@
       <div class="course-footer">
         <hr class="course-divider" />
         <button class="course-btn" @click="viewDetails">
-          View Details
+          {{ t('explore.viewDetails') }}
         </button>
       </div>
     </div>
@@ -33,7 +33,8 @@ const props = defineProps({
 })
 
 const i18n = useI18nStore()
-const priceLabel = computed(() => (props.course.price ?? 0) === 0 ? 'free' : `$${props.course.price}`)
+const t = i18n.t
+const priceLabel = computed(() => (props.course.price ?? 0) === 0 ? t('explore.free') : `$${props.course.price}`)
 const displayTitle = computed(() =>
   i18n.locale === 'en'
     ? props.course.title_en || props.course.title
@@ -49,8 +50,8 @@ const displayTags = computed(() => {
   const tags = props.course.tags && props.course.tags.length ? props.course.tags : []
   const derived = [
     props.course.category,
-    props.course.age ? `${props.course.age} yrs` : null,
-    props.course.lessons?.length ? `${props.course.lessons.length} lessons` : null
+    props.course.age ? `${props.course.age} ${t('explore.years')}` : null,
+    props.course.lessons?.length ? `${props.course.lessons.length} ${t('explore.lessons')}` : null
   ].filter(Boolean)
   return tags.length ? tags : derived
 })

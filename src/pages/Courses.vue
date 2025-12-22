@@ -1,16 +1,22 @@
 <template>
   <div>
-    <header class="hero">
-      <h1 class="hero-title"><span>Explore</span><span>Courses</span></h1>
+    <header class="hero position-relative overflow-hidden">
+      <h1 class="hero-title"><span>{{ t('explore.title') }}</span><span>{{ t('explore.courses') }}</span></h1>
+      <!-- Wave Divider -->
+      <div class="wave-divider">
+        <svg viewBox="0 0 1440 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,75 C240,0 480,150 720,75 C960,0 1200,150 1440,75 L1440,150 L0,150 Z" fill="white"/>
+        </svg>
+      </div>
     </header>
 
     <section class="controls-section">
       <div class="controls container">
         <div class="controls-left">
-          <h2 class="filters-title">filters</h2>
-          <div class="age-card" aria-labelledby="ages-label">
-            <h3 id="ages-label" class="age-title">ages</h3>
-            <ul class="age-list">
+          <h2 class="filters-title">{{ t('explore.filters') }}</h2>
+          <div class="filter-card" aria-labelledby="ages-label">
+            <h3 id="ages-label" class="filter-title">{{ t('explore.ages') }}</h3>
+            <ul class="filter-list">
               <li v-for="range in ageRanges" :key="range.value">
                 <label>
                   <input
@@ -24,10 +30,26 @@
               </li>
             </ul>
           </div>
+          <div class="filter-card" aria-labelledby="sort-label">
+            <h3 id="sort-label" class="filter-title">{{ t('explore.sortBy') }}</h3>
+            <ul class="filter-list">
+              <li v-for="option in sortOptions" :key="option.value">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="sort"
+                    :value="option.value"
+                    v-model="selectedSort"
+                  />
+                  <span>{{ option.label }}</span>
+                </label>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div class="controls-right">
-          <div class="pagination" role="tablist" aria-label="Course filters">
+          <div class="pagination" role="tablist" :aria-label="t('explore.courseFilters')">
             <button
               v-for="filter in filters"
               :key="filter.value"
@@ -53,24 +75,38 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useCoursesStore } from '@/stores/courses.js'
 import ExploreCourseCard from '@/components/ExploreCourseCard.vue'
+import { useI18nStore } from '@/stores/i18n.js'
 
 const store = useCoursesStore()
+const i18n = useI18nStore()
+const t = i18n.t
 onMounted(() => store.load())
 
-const filters = [
-  { label: 'all', value: 'all' },
-  { label: 'free', value: 'free' },
-  { label: 'paid', value: 'paid' }
-]
-const ageRanges = [
-  { value: '0-2', label: '0 years to 2 years' },
-  { value: '3-5', label: '3 years to 5 years' },
-  { value: '6-8', label: '6 years to 8 years' },
-  { value: '9-12', label: '9 years to 12 years' }
-]
+const filters = computed(() => [
+  { label: t('explore.all'), value: 'all' },
+  { label: t('explore.free'), value: 'free' },
+  { label: t('explore.paid'), value: 'paid' }
+])
+const ageRanges = computed(() => [
+  { value: '3-5', label: t('explore.ageRange.3-5') },
+  { value: '4-6', label: t('explore.ageRange.4-6') },
+  { value: '5-7', label: t('explore.ageRange.5-7') },
+  { value: '6-8', label: t('explore.ageRange.6-8') },
+  { value: '7-9', label: t('explore.ageRange.7-9') },
+  { value: '8-10', label: t('explore.ageRange.8-10') }
+])
+
+const sortOptions = computed(() => [
+  { value: 'all', label: t('explore.sortAll') },
+  { value: 'a-z', label: t('explore.sortAZ') },
+  { value: 'z-a', label: t('explore.sortZA') },
+  { value: 'price-high', label: t('explore.sortPriceHigh') },
+  { value: 'price-low', label: t('explore.sortPriceLow') }
+])
 
 const filterType = ref('all')
 const selectedAges = ref([])
+const selectedSort = ref([])
 const currentPage = ref(1)
 const perPage = 4
 
@@ -88,6 +124,29 @@ const filteredCourses = computed(() => {
   if (filterType.value === 'free') list = list.filter((c) => (c.price ?? 0) === 0)
   if (filterType.value === 'paid') list = list.filter((c) => (c.price ?? 0) > 0)
   list = list.filter((c) => withinAgeRange(c.age, selectedAges.value))
+  
+  // Apply sort filters
+  if (selectedSort.value.length > 0) {
+    const sortType = selectedSort.value[selectedSort.value.length - 1] // Use last selected
+    if (sortType === 'a-z') {
+      list = list.sort((a, b) => {
+        const titleA = (i18n.locale === 'en' ? (a.title_en || a.title) : (a.title_ar || a.title) || '').toLowerCase()
+        const titleB = (i18n.locale === 'en' ? (b.title_en || b.title) : (b.title_ar || b.title) || '').toLowerCase()
+        return titleA.localeCompare(titleB)
+      })
+    } else if (sortType === 'z-a') {
+      list = list.sort((a, b) => {
+        const titleA = (i18n.locale === 'en' ? (a.title_en || a.title) : (a.title_ar || a.title) || '').toLowerCase()
+        const titleB = (i18n.locale === 'en' ? (b.title_en || b.title) : (b.title_ar || b.title) || '').toLowerCase()
+        return titleB.localeCompare(titleA)
+      })
+    } else if (sortType === 'price-high') {
+      list = list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0))
+    } else if (sortType === 'price-low') {
+      list = list.sort((a, b) => (a.price ?? 0) - (b.price ?? 0))
+    }
+  }
+  
   return list
 })
 
@@ -110,7 +169,7 @@ const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value += 1
 }
 
-watch([filterType, selectedAges], () => {
+watch([filterType, selectedAges, selectedSort], () => {
   currentPage.value = 1
 })
 </script>
@@ -127,7 +186,7 @@ body {
 
 .hero {
   width: 100%;
-  height: 90vh;
+  min-height: 70vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,30 +195,59 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-
+  padding-top: 90px;
+  padding-bottom: 120px;
+  position: relative;
+  overflow: hidden;
 }
 
 .hero-title {
   color: #ffffff;
   margin: 0;
   font-weight: 800;
-  line-height: 1;
-  font-size: clamp(2rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  font-size: clamp(2.2rem, 4.8vw, 3.2rem);
 }
 .hero-title span {
   display: block;
 }
 
+@media (max-width: 768px) {
+  .hero {
+    min-height: 58vh;
+    padding-top: 70px;
+    padding-bottom: 70px;
+  }
+}
+
 @media (max-width: 480px) {
   .hero {
-    height: 45vh;
-    padding: 1rem;
+    min-height: 50vh;
+    padding-top: 60px;
+    padding-bottom: 60px;
   }
+}
+
+.wave-divider {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.wave-divider svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .controls-section {
   width: 100%;
-  padding: 2.5rem 1rem;
+  padding: 50px 1rem;
   background: #ffffff;
 }
 .controls {
@@ -178,30 +266,38 @@ body {
   text-transform: none;
 }
 .pagination {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-}
-.page-btn {
   background: #e0e0e0;
-  color: #000;
-  border: none;
-  padding: 0.5rem 0.9rem;
-  border-radius: 6px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 150ms ease, color 150ms ease, transform 80ms ease;
+  border-radius: 999px;
+  padding: 4px;
+  gap: 0;
+  position: relative;
 }
+
+.page-btn {
+  background: transparent;
+  color: #666666;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease;
+  position: relative;
+  z-index: 1;
+  white-space: nowrap;
+}
+
 .page-btn:focus {
-  outline: 2px solid rgba(11, 94, 168, 0.25);
+  outline: 2px solid rgba(3, 59, 98, 0.25);
   outline-offset: 2px;
 }
-.page-btn:active {
-  transform: translateY(1px);
-}
+
 .page-btn.active {
-  background: #0b5ea8;
+  background: #033B62;
   color: #ffffff;
+  box-shadow: 0 2px 4px rgba(3, 59, 98, 0.2);
 }
 
 @media (max-width: 600px) {
@@ -230,7 +326,7 @@ body {
   align-items: flex-start;
 }
 
-.age-card {
+.filter-card {
   background: #ffffff;
   border: 1px solid #e0e0e0;
   box-shadow: 0 6px 16px rgba(16, 24, 40, 0.04);
@@ -239,17 +335,18 @@ body {
   color: #000;
   width: max-content;
   max-width: 480px;
+  margin-bottom: 1rem;
 }
 
-.age-title {
+.filter-title {
   margin: 0 0 0.35rem 0;
   padding-bottom: 0.25rem;
   font-size: 0.95rem;
   font-weight: 800;
-  color: #333333;
+  color: #033B62;
   border-bottom: 2px solid #666666;
 }
-.age-list {
+.filter-list {
   list-style: none;
   padding: 0.45rem 0 0 0;
   margin: 0;
@@ -257,23 +354,31 @@ body {
   flex-direction: column;
   gap: 0.45rem;
 }
-.age-list li label {
+.filter-list li label {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
   font-size: 0.95rem;
-  color: #222;
+  color: #666666;
 }
-.age-list input[type='checkbox'] {
+.filter-list li label:hover {
+  color: #033B62;
+}
+.filter-list input[type='checkbox'] {
   width: 16px;
   height: 16px;
+  cursor: pointer;
+}
+.filter-list input[type='checkbox']:checked + span {
+  color: #033B62;
+  font-weight: 600;
 }
 @media (max-width: 720px) {
   .controls-right {
     justify-content: flex-end;
   }
-  .age-card {
+  .filter-card {
     width: 100%;
     max-width: none;
   }

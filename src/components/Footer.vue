@@ -82,14 +82,15 @@ const t = i18n.t
 
 <style scoped>
 .footstyle {
-  background: url('/assets/images/foot.png') top center / contain no-repeat;
+  background: url('/assets/images/foot.png') center top / contain no-repeat;
   background-size: 100% auto;
+  background-position: center -50px;
 }
 
 .footer-section {
   background-color: var(--primary, #033B62);
   position: relative;
-  padding: 180px 0 40px 0;
+  padding: 220px 0 40px 0;
 }
 
 .footer-container {
