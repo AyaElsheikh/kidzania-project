@@ -47,6 +47,11 @@
                   {{ t('nav.playWithUs') }}
                 </router-link>
               </li>
+              <li class="nav-item">
+                <router-link to="/ai-assistant" class="nav-link" :class="{ active: $route.path === '/ai-assistant' }">
+                  {{ t('nav.aiAssistant') }}
+                </router-link>
+              </li>
             </ul>
 
             <!-- Actions (edge aligned) -->

@@ -19,6 +19,7 @@ import { useAuthStore } from '@/stores/auth.js'
 
 import Tests from '@/pages/Tests.vue'
 import PlayWithUs from '@/pages/PlayWithUs.vue'
+import KidzademyAIAssistant from '@/pages/KidzademyAIAssistant.vue'
 
 const routes = [
   { path: '/', name: 'home', component: Home },
@@ -35,6 +36,7 @@ const routes = [
   { path: '/profile', name: 'profile', component: Profile },
   { path: '/tests', name: 'tests', component: Tests },
   { path: '/play', name: 'play', component: PlayWithUs },
+  { path: '/ai-assistant', name: 'ai-assistant', component: KidzademyAIAssistant },
   {
     path: '/admin', component: AdminLayout, children: [
       { path: '', name: 'admin-dashboard', component: AdminDashboard },
