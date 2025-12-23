@@ -305,6 +305,7 @@ function displayDesc(course) {
   line-height: 1.05;
   font-size: clamp(2rem, 5vw, 3.6rem);
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  letter-spacing: 2px;
 }
 
 .myc-hero-subtitle {

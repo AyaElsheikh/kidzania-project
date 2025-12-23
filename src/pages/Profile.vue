@@ -119,6 +119,7 @@ function openChangePassword() {
   line-height: 1.2;
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   margin-bottom: 8px;
+  letter-spacing: 2px;
 }
 
 .hero-subtitle {
