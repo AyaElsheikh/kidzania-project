@@ -27,11 +27,27 @@
               <div class="form-row">
                 <div class="form-group half">
                   <label>{{ t('subscribe.firstName') }}</label>
-                  <input type="text" v-model="form.firstName" :placeholder="t('subscribe.firstNamePlaceholder')" class="input-field" />
+                  <input 
+                    type="text" 
+                    v-model="form.firstName" 
+                    :placeholder="t('subscribe.firstNamePlaceholder')" 
+                    class="input-field" 
+                    @input="validateField('firstName')"
+                    :class="{ 'is-invalid': errors.firstName }"
+                  />
+                  <span v-if="errors.firstName" class="error-text">{{ errors.firstName }}</span>
                 </div>
                 <div class="form-group half">
                   <label>{{ t('subscribe.lastName') }}</label>
-                  <input type="text" v-model="form.lastName" :placeholder="t('subscribe.lastNamePlaceholder')" class="input-field" />
+                  <input 
+                    type="text" 
+                    v-model="form.lastName" 
+                    :placeholder="t('subscribe.lastNamePlaceholder')" 
+                    class="input-field" 
+                    @input="validateField('lastName')"
+                    :class="{ 'is-invalid': errors.lastName }"
+                  />
+                  <span v-if="errors.lastName" class="error-text">{{ errors.lastName }}</span>
                 </div>
               </div>
               <div class="form-group">
@@ -41,6 +57,8 @@
                   v-model="form.email" 
                   :placeholder="t('subscribe.emailPlaceholder')" 
                   class="input-field" 
+                  @input="validateField('email')"
+                  @blur="validateField('email', true)"
                   :class="{ 'is-invalid': errors.email }"
                 />
                 <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
@@ -61,9 +79,11 @@
                     <input 
                       type="text" 
                       v-model="form.cardNumber" 
-                      placeholder="0000 0000 0000 0000" 
+                    placeholder="0000 0000 0000 0000" 
                       maxlength="19" 
                       class="input-field" 
+                      @input="validateField('cardNumber')"
+                      @blur="validateField('cardNumber', true)"
                       :class="{ 'is-invalid': errors.cardNumber }"
                     />
                     <i class="icon-credit-card"></i>
@@ -79,6 +99,8 @@
                       placeholder="MM/YY" 
                       maxlength="5" 
                       class="input-field" 
+                      @input="validateField('expiry')"
+                      @blur="validateField('expiry', true)"
                       :class="{ 'is-invalid': errors.expiry }"
                     />
                     <span v-if="errors.expiry" class="error-text">{{ errors.expiry }}</span>
@@ -91,6 +113,8 @@
                       placeholder="123" 
                       maxlength="3" 
                       class="input-field" 
+                      @input="validateField('cvv')"
+                      @blur="validateField('cvv', true)"
                       :class="{ 'is-invalid': errors.cvv }"
                     />
                     <span v-if="errors.cvv" class="error-text">{{ errors.cvv }}</span>
@@ -98,7 +122,16 @@
                 </div>
                 <div class="form-group">
                   <label>{{ t('subscribe.cardHolder') }}</label>
-                  <input type="text" v-model="form.cardHolder" :placeholder="t('subscribe.cardHolderPlaceholder')" class="input-field" />
+                  <input 
+                    type="text" 
+                    v-model="form.cardHolder" 
+                    :placeholder="t('subscribe.cardHolderPlaceholder')" 
+                    class="input-field" 
+                    @blur="validateField('cardHolder', true)"
+                    @input="validateField('cardHolder')"
+                    :class="{ 'is-invalid': errors.cardHolder }"
+                  />
+                  <span v-if="errors.cardHolder" class="error-text">{{ errors.cardHolder }}</span>
                 </div>
               </div>
             </div>
@@ -201,10 +234,119 @@ const categoryText = (c) => {
   return map[c.category] || c.category
 }
 
+const validateField = (field, isBlur = false) => {
+  delete errors[field]
+  
+  // Name fields & Card Holder: Check for numbers
+  if (field === 'firstName' || field === 'lastName' || field === 'cardHolder') {
+    if (/\d/.test(form[field])) {
+      errors[field] = t('subscribe.errors.nameNumbers')
+      return false
+    }
+  }
+
+  // Email
+  if (field === 'email') {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (form.email && !emailPattern.test(form.email)) {
+      if (isBlur) { // Check only on blur to avoid annoyance while typing
+         errors.email = t('subscribe.errors.invalidEmail')
+         return false
+      }
+    }
+  }
+
+  // Card Number
+  if (field === 'cardNumber') {
+    if (/[^0-9\s]/.test(form.cardNumber)) {
+       errors.cardNumber = t('subscribe.errors.invalidCard')
+       return false
+    }
+    const clean = form.cardNumber.replace(/\s/g, '')
+    // Strict length check only on blur
+    if (isBlur) {
+       if (clean.length !== 16) {
+         errors.cardNumber = t('subscribe.errors.invalidCard')
+         return false
+       }
+    } else {
+       // Input mode: only error if too long
+       if (clean.length > 16) {
+         errors.cardNumber = t('subscribe.errors.invalidCard')
+         return false
+       }
+    }
+  }
+
+  // Expiry: MM/YY
+  if (field === 'expiry') {
+    // Basic format check
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(form.expiry)) {
+      // If blurring, format must be correct. If typing, allow partial until length check?
+      // Just check if it looks wrong. 
+      if (isBlur) {
+          errors.expiry = t('subscribe.errors.invalidExpiry')
+          return false
+      }
+      // While typing, maybe only if length is 5 but regex fails
+      if (form.expiry.length >= 5) {
+        errors.expiry = t('subscribe.errors.invalidExpiry')
+        return false
+      }
+    } else {
+      // Logic check (expired?)
+      const parts = form.expiry.split('/')
+      if (parts.length === 2) {
+        const month = parseInt(parts[0], 10)
+        const year = parseInt('20' + parts[1], 10)
+        const now = new Date()
+        const currentYear = now.getFullYear()
+        const currentMonth = now.getMonth() + 1
+        
+        if (year < currentYear || (year === currentYear && month < currentMonth)) {
+          errors.expiry = t('subscribe.errors.expiredCard')
+          return false
+        }
+      }
+    }
+  }
+
+  // CVV
+  if (field === 'cvv') {
+    if (/[^0-9]/.test(form.cvv)) {
+       errors.cvv = t('subscribe.errors.invalidCvv')
+       return false
+    }
+    if (isBlur) {
+      if (form.cvv.length !== 3) {
+        errors.cvv = t('subscribe.errors.invalidCvv')
+        return false
+      }
+    } else {
+       if (form.cvv.length > 3) {
+         errors.cvv = t('subscribe.errors.invalidCvv')
+         return false
+       }
+    }
+  }
+  
+  return true
+}
+
 const validate = () => {
   let isValid = true
   // Reset errors
   Object.keys(errors).forEach(key => delete errors[key])
+
+  // Name validation
+  if (/\d/.test(form.firstName)) {
+    errors.firstName = t('subscribe.errors.nameNumbers')
+    isValid = false
+  }
+  if (/\d/.test(form.lastName)) {
+    errors.lastName = t('subscribe.errors.nameNumbers')
+    isValid = false
+  }
 
   // Email validation
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -378,7 +520,6 @@ label {
   margin-top: 5px;
   display: block;
 }
-
 
 
 /* Summary Card */
