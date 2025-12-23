@@ -3,6 +3,7 @@ import Home from '@/pages/Home.vue'
 import Courses from '@/pages/Courses.vue'
 import CourseDetail from '@/pages/CourseDetail.vue'
 import CourseDetailsPage from '@/pages/CourseDetailsPage.vue'
+import CoursePlayer from '@/pages/CoursePlayer.vue'
 import Profile from '@/pages/Profile.vue'
 import MyCourses from '@/pages/MyCourses.vue'
 import Subscribe from '@/pages/Subscribe.vue'
@@ -14,6 +15,7 @@ import AdminCourses from '@/pages/admin/AdminCourses.vue'
 import AdminSubscriptions from '@/pages/admin/AdminSubscriptions.vue'
 import AdminExams from '@/pages/admin/AdminExams.vue'
 import { useAdminStore } from '@/stores/admin.js'
+import { useAuthStore } from '@/stores/auth.js'
 
 import Tests from '@/pages/Tests.vue'
 import PlayWithUs from '@/pages/PlayWithUs.vue'
@@ -26,6 +28,7 @@ const routes = [
   { path: '/courses/math', name: 'courses-math', component: Courses, props: { category: 'Math' } },
   { path: '/course/:id', name: 'course-detail', component: CourseDetail },
   { path: '/course-details/:id', name: 'course-details-page', component: CourseDetailsPage },
+  { path: '/course-player/:id', name: 'course-player', component: CoursePlayer },
   { path: '/subscribe/:id', name: 'subscribe', component: Subscribe },
   { path: '/auth', name: 'auth', component: Auth },
   { path: '/my-courses', name: 'my-courses', component: MyCourses },
@@ -53,6 +56,14 @@ router.beforeEach((to) => {
     const admin = useAdminStore()
     if (!admin.loggedIn) {
       return { name: 'auth' }
+    }
+  }
+
+  if (to.path === '/profile') {
+    const auth = useAuthStore()
+    auth.load()
+    if (!auth.isAuthenticated) {
+      return { name: 'auth', query: { redirect: to.fullPath } }
     }
   }
 })

@@ -209,6 +209,36 @@ body {
   border-radius: 2px;
 }
 
+/* RTL navbar fixes: tighter spacing + correct brand spacing */
+[dir="rtl"] .kidzademy-navbar .navbar-brand {
+  margin-right: 0 !important;
+  margin-left: 1rem !important;
+}
+
+[dir="rtl"] .kidzademy-navbar .navbar-nav .nav-link {
+  padding: calc(var(--navbar-padding-y) * 0.6) calc(var(--navbar-padding-x) * 0.75);
+  font-size: clamp(0.82rem, 0.78rem + 0.25vw, 0.98rem);
+}
+
+@media (max-width: 1200px) {
+  [dir="rtl"] .kidzademy-navbar .navbar-nav .nav-link {
+    padding: calc(var(--navbar-padding-y) * 0.55) calc(var(--navbar-padding-x) * 0.7);
+    font-size: clamp(0.8rem, 0.76rem + 0.2vw, 0.95rem);
+  }
+}
+
+/* If Arabic labels get long on wide screens, allow wrapping without breaking layout */
+@media (min-width: 992px) {
+  [dir="rtl"] .nav-layout {
+    flex-wrap: wrap;
+    row-gap: 0.35rem;
+  }
+  [dir="rtl"] .nav-tabs-list {
+    flex-wrap: wrap;
+    row-gap: 0.25rem;
+  }
+}
+
 .kidzademy-navbar .navbar-toggler {
   border-color: rgba(255, 255, 255, 0.3);
 }

@@ -8,20 +8,45 @@
       "category": "Arabic",
       "price": 29,
       "thumbnail": "/assets/images/topcourses1.png",
+      "heroImage": "/assets/images/topcourses1.png",
+      "overviewImage": "/assets/images/topcourses1.png",
       "description": "تعليم بسيط للأطفال",
       "description_ar": "تعليم بسيط للأطفال",
       "description_en": "Simple Arabic learning for kids",
+      "overview_ar": "كورس ممتع للأطفال يساعدهم على تعلّم أساسيات اللغة العربية بطريقة بسيطة وتفاعلية. سيتعرّف الطفل على الحروف والأصوات والكلمات الشائعة من خلال أنشطة مرحة، وتمارين قصيرة، وقصص صغيرة. الهدف هو بناء ثقة الطفل في القراءة والنطق الصحيح وتوسيع مفرداته تدريجيًا.",
+      "overview_en": "A fun course that helps kids learn Arabic basics in a simple, interactive way. Children will practice letters, sounds, and common words through playful activities, short exercises, and mini stories—building confidence in pronunciation and early reading while growing vocabulary step by step.",
       "age": "4-6",
       "seats": 10,
+      "tags": ["Stories", "Games", "Spell"],
       "lessons": [
         {
           "id": "l1",
           "title": "الحروف 1",
+          "title_ar": "الحروف 1",
+          "title_en": "Letters 1",
+          "duration": "3:20",
+          "description_ar": "نتعرّف على مجموعة من الحروف الأولى مع طريقة نطقها وأمثلة بسيطة.",
+          "description_en": "Meet the first set of letters, learn how to pronounce them, and try simple examples.",
           "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
         },
         {
           "id": "l2",
           "title": "الحروف 2",
+          "title_ar": "الحروف 2",
+          "title_en": "Letters 2",
+          "duration": "4:05",
+          "description_ar": "استكمال الحروف مع تدريب سريع على التمييز بين أشكالها.",
+          "description_en": "Continue with more letters and quick practice to recognize their shapes.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "كلمات سهلة",
+          "title_ar": "كلمات سهلة",
+          "title_en": "Easy Words",
+          "duration": "5:10",
+          "description_ar": "نبني كلمات بسيطة ونربطها بالصور لتثبيت المعنى.",
+          "description_en": "Build simple words and connect them with images to remember meanings.",
           "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
         }
       ]
@@ -34,20 +59,45 @@
       "category": "English",
       "price": 29,
       "thumbnail": "/assets/images/topcourses2.png",
+      "heroImage": "/assets/images/topcourses2.png",
+      "overviewImage": "/assets/images/topcourses2.png",
       "description": "Learn simple English",
       "description_ar": "تعلم الإنجليزية بأسلوب بسيط",
       "description_en": "Learn simple English",
+      "overview_ar": "كورس تأسيسي لتعلّم الإنجليزية للأطفال بطريقة ممتعة: حروف وأصوات، كلمات يومية، وجُمل قصيرة. الأنشطة مصممة لتقوية الاستماع والنطق، مع تدريبات مرئية تساعد الطفل على تذكر الكلمات بسهولة.",
+      "overview_en": "A foundational English course for kids: letters & sounds, daily words, and short sentences. Activities are designed to improve listening and pronunciation, with visual practice that makes vocabulary easy to remember.",
       "age": "5-7",
       "seats": 10,
+      "tags": ["Music", "Games", "Stories"],
       "lessons": [
         {
           "id": "l1",
           "title": "ABC",
+          "title_ar": "ABC",
+          "title_en": "ABC",
+          "duration": "3:40",
+          "description_ar": "تعلم حروف الأبجدية مع نطق بسيط وأمثلة مرئية.",
+          "description_en": "Learn the alphabet with simple pronunciation and visual examples.",
           "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
         },
         {
           "id": "l2",
           "title": "Words",
+          "title_ar": "كلمات",
+          "title_en": "Words",
+          "duration": "4:55",
+          "description_ar": "مفردات يومية (ألوان/أشياء/حيوانات) مع لعبة مطابقة ممتعة.",
+          "description_en": "Daily vocabulary (colors/objects/animals) with a fun matching game.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "Simple Sentences",
+          "title_ar": "جُمل بسيطة",
+          "title_en": "Simple Sentences",
+          "duration": "6:05",
+          "description_ar": "نكوّن جُمل قصيرة للتدريب على التحدث بثقة.",
+          "description_en": "Build short sentences to practice speaking with confidence.",
           "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
         }
       ]
@@ -60,20 +110,422 @@
       "category": "Math",
       "price": 29,
       "thumbnail": "/assets/images/math.png",
+      "heroImage": "/assets/images/math.png",
+      "overviewImage": "/assets/images/math.png",
       "description": "Numbers and games",
       "description_ar": "الأرقام والألعاب",
       "description_en": "Numbers and games",
+      "overview_ar": "هذا الكورس يعرّف الأطفال (من 4 إلى 8 سنوات) بأساسيات الرياضيات من خلال أنشطة ممتعة وتفاعلية. سيتعلم طفلك الأرقام، الأشكال، العد، والجمع والطرح بطريقة مرحة، مع تدريبات موجهة ووسائل بصرية ملونة وأنشطة عملية. يساعد الكورس على بناء الثقة في فهم الأنماط وحل المسائل البسيطة، ويشجّع الفضول والإبداع والتفكير المنطقي لبناء أساس قوي للتعلّم في المستقبل.",
+      "overview_en": "This course introduces children (ages 4–8) to basic math concepts through fun, engaging activities. Kids will explore numbers, shapes, counting, and simple addition & subtraction in a playful and interactive way. With guided exercises, colorful visuals, and hands-on tasks, children build confidence in understanding patterns and solving simple problems—encouraging curiosity, creativity, and logical thinking for a strong foundation.",
       "age": "4-8",
       "seats": 12,
+      "tags": ["Puzzles", "Games", "Count"],
       "lessons": [
         {
           "id": "l1",
           "title": "Counting",
+          "title_ar": "الأرقام والعد",
+          "title_en": "Numbers & Counting",
+          "duration": "2:30",
+          "description_ar": "تعرّف على الأرقام من 0 إلى 20 مع أنشطة ممتعة: عدّ للأمام والخلف، وتدريب بسيط لبناء حسّ الأرقام.",
+          "description_en": "Recognize and order numbers from 0 to 20 using fun activities. Practice counting forwards and backwards to build number sense.",
           "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
         },
         {
           "id": "l2",
           "title": "Addition",
+          "title_ar": "الجمع الأساسي",
+          "title_en": "Basic Addition",
+          "duration": "4:10",
+          "description_ar": "هنتعلم الجمع خطوة بخطوة بأمثلة مصوّرة وألعاب صغيرة تساعد الطفل يفهم الفكرة بسهولة.",
+          "description_en": "Learn addition step-by-step with visual examples and mini games that make the concept easy and fun.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "Basic subtraction",
+          "title_ar": "الطرح الأساسي",
+          "title_en": "Basic Subtraction",
+          "duration": "5:15",
+          "description_ar": "مفهوم الطرح من خلال قصص وأمثلة من الحياة اليومية—كم تبقى؟",
+          "description_en": "Understand subtraction using simple stories and real-life examples—how many are left?",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l4",
+          "title": "Basic Multiplication",
+          "title_ar": "الضرب الأساسي",
+          "title_en": "Basic Multiplication",
+          "duration": "6:20",
+          "description_ar": "مجموعات متساوية وتكرار الجمع بطريقة سهلة وبصرية.",
+          "description_en": "Learn multiplication as equal groups and repeated addition using visual practice.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l5",
+          "title": "Basic Division",
+          "title_ar": "القسمة الأساسية",
+          "title_en": "Basic Division",
+          "duration": "8:06",
+          "description_ar": "مشاركة الأشياء بالتساوي (قسمة) مع أمثلة بسيطة وممتعة للأطفال.",
+          "description_en": "Learn division by sharing equally with simple kid-friendly examples.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
+      ]
+    },
+    {
+      "id": "c4",
+      "title": "Learn Arabic",
+      "title_ar": "تعلم العربية",
+      "title_en": "Learn Arabic",
+      "category": "Arabic",
+      "price": 0,
+      "thumbnail": "/assets/images/topcourses1.png",
+      "heroImage": "/assets/images/topcourses1.png",
+      "overviewImage": "/assets/images/topcourses1.png",
+      "description": "Letters and sounds through stories",
+      "description_ar": "الحروف والأصوات من خلال القصص",
+      "description_en": "Letters and sounds through stories",
+      "overview_ar": "رحلة خفيفة وممتعة لتعلّم الحروف العربية والأصوات الأساسية باستخدام قصص قصيرة وألعاب تفاعلية. مناسب جدًا للمبتدئين ويركز على الاستماع والنطق وربط الحرف بالصوت.",
+      "overview_en": "A light and fun journey to learn Arabic letters and basic sounds using short stories and interactive games. Great for beginners—focused on listening, pronunciation, and connecting each letter to its sound.",
+      "age": "3-5",
+      "seats": 20,
+      "tags": ["Stories", "Games"],
+      "lessons": [
+        {
+          "id": "l1",
+          "title": "الحروف: أ - ب - ت",
+          "title_ar": "الحروف: أ - ب - ت",
+          "title_en": "Letters: A–B–T (Arabic)",
+          "duration": "3:05",
+          "description_ar": "تعرف على أول 3 حروف مع نطقها الصحيح وأمثلة مصورة.",
+          "description_en": "Learn the first 3 Arabic letters with correct pronunciation and picture examples.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "أصوات الحروف",
+          "title_ar": "أصوات الحروف",
+          "title_en": "Letter Sounds",
+          "duration": "4:25",
+          "description_ar": "نربط الحرف بصوته من خلال ألعاب تكرار واستماع.",
+          "description_en": "Connect each letter to its sound using listening and repeat games.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "كلمات سهلة",
+          "title_ar": "كلمات سهلة",
+          "title_en": "Easy Words",
+          "duration": "5:00",
+          "description_ar": "نكوّن كلمات بسيطة ونقرأها مع صور ممتعة.",
+          "description_en": "Build simple words and read them with fun pictures.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
+      ]
+    },
+    {
+      "id": "c5",
+      "title": "ABC Learning",
+      "title_ar": "تعلم الأبجدية",
+      "title_en": "ABC Learning",
+      "category": "English",
+      "price": 19,
+      "thumbnail": "/assets/images/topcourses2.png",
+      "heroImage": "/assets/images/topcourses2.png",
+      "overviewImage": "/assets/images/topcourses2.png",
+      "description": "ABC with songs and games",
+      "description_ar": "الأبجدية مع أغاني وألعاب ممتعة",
+      "description_en": "ABC with songs and games",
+      "overview_ar": "تعلم الأبجدية الإنجليزية عبر أغاني قصيرة، ألعاب تكرار، وتمارين نطق ممتعة. يساعد الكورس الطفل على التمييز بين الحروف الكبيرة والصغيرة وبناء كلمات بسيطة.",
+      "overview_en": "Learn the English alphabet through short songs, repeat games, and fun pronunciation practice. Kids will recognize uppercase/lowercase letters and start building simple words.",
+      "age": "4-6",
+      "seats": 15,
+      "tags": ["Music", "Games"],
+      "lessons": [
+        {
+          "id": "l1",
+          "title": "Letters A–F",
+          "title_ar": "حروف A–F",
+          "title_en": "Letters A–F",
+          "duration": "3:15",
+          "description_ar": "نطق الحروف A إلى F مع أمثلة وألعاب قصيرة.",
+          "description_en": "Pronounce letters A to F with examples and mini games.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "Letters G–L",
+          "title_ar": "حروف G–L",
+          "title_en": "Letters G–L",
+          "duration": "3:55",
+          "description_ar": "استكمال الحروف مع تدريب بصري على التمييز بين الشكل والصوت.",
+          "description_en": "Continue letters with visual practice to connect shape and sound.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "Spelling Fun",
+          "title_ar": "تهجئة ممتعة",
+          "title_en": "Spelling Fun",
+          "duration": "5:40",
+          "description_ar": "نلعب لعبة تهجئة لتكوين كلمات قصيرة من حروف تعلمناها.",
+          "description_en": "Play a spelling game to form short words using learned letters.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
+      ]
+    },
+    {
+      "id": "c6",
+      "title": "123 Learning",
+      "title_ar": "تعلم الأرقام",
+      "title_en": "123 Learning",
+      "category": "Math",
+      "price": 0,
+      "thumbnail": "/assets/images/topcourses3.png",
+      "heroImage": "/assets/images/topcourses3.png",
+      "overviewImage": "/assets/images/topcourses3.png",
+      "description": "Count and match with puzzles",
+      "description_ar": "عدّ وطابق مع ألغاز ممتعة",
+      "description_en": "Count and match with puzzles",
+      "overview_ar": "كورس مرح لتعلّم الأرقام والعدّ للأطفال الصغار باستخدام مطابقة الأشكال وألعاب بسيطة. يساعد الطفل على العدّ بثقة وفهم الكميات من خلال صور وتمارين قصيرة.",
+      "overview_en": "A playful course to learn numbers and counting using shape matching and simple games. Kids build counting confidence and understand quantities through pictures and short practice.",
+      "age": "3-5",
+      "seats": 18,
+      "tags": ["Puzzles", "Count"],
+      "lessons": [
+        {
+          "id": "l1",
+          "title": "Counting 1-5",
+          "title_ar": "العد 1-5",
+          "title_en": "Counting 1–5",
+          "duration": "2:45",
+          "description_ar": "نتعلم العد من 1 إلى 5 مع صور وألعاب مطابقة.",
+          "description_en": "Learn to count from 1 to 5 with pictures and matching games.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "Counting 6-10",
+          "title_ar": "العد 6-10",
+          "title_en": "Counting 6–10",
+          "duration": "3:10",
+          "description_ar": "نكمل العد من 6 إلى 10 مع أنشطة تلوين وتحديد العدد الصحيح.",
+          "description_en": "Continue counting 6 to 10 with coloring activities and number spotting.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "Shapes Match",
+          "title_ar": "مطابقة الأشكال",
+          "title_en": "Shapes Match",
+          "duration": "4:20",
+          "description_ar": "مطابقة الأشكال (دائرة/مربع/مثلث) مع لعبة ممتعة.",
+          "description_en": "Match shapes (circle/square/triangle) with a fun puzzle game.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
+      ]
+    },
+    {
+      "id": "c7",
+      "title": "Arabic Stories",
+      "title_ar": "قصص عربية",
+      "title_en": "Arabic Stories",
+      "category": "Arabic",
+      "price": 25,
+      "thumbnail": "/assets/images/OurTopCourses.png",
+      "heroImage": "/assets/images/OurTopCourses.png",
+      "overviewImage": "/assets/images/OurTopCourses.png",
+      "description": "Short stories to build vocabulary",
+      "description_ar": "قصص قصيرة لتنمية المفردات",
+      "description_en": "Short stories to build vocabulary",
+      "overview_ar": "قصص قصيرة محببة للأطفال لتنمية المفردات وتحسين الفهم. كل درس يحتوي على قصة بسيطة ثم نشاط كلمات جديدة وأسئلة سريعة ممتعة لتثبيت المعنى.",
+      "overview_en": "Kid-friendly short stories to build vocabulary and comprehension. Each lesson includes a simple story followed by new words and quick fun questions to reinforce meaning.",
+      "age": "5-7",
+      "seats": 12,
+      "tags": ["Stories", "Spell"],
+      "lessons": [
+        {
+          "id": "l1",
+          "title": "قصة: الأرنب والسلحفاة",
+          "title_ar": "قصة: الأرنب والسلحفاة",
+          "title_en": "Story: The Rabbit & the Tortoise",
+          "duration": "6:35",
+          "description_ar": "قصة لطيفة مع عبرة بسيطة، مناسبة للقراءة والاستماع.",
+          "description_en": "A sweet story with a simple moral—great for reading and listening practice.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "كلمات جديدة",
+          "title_ar": "كلمات جديدة",
+          "title_en": "New Words",
+          "duration": "4:15",
+          "description_ar": "نتعلم كلمات جديدة من القصة مع أمثلة وصور.",
+          "description_en": "Learn new words from the story with examples and pictures.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "أسئلة ممتعة",
+          "title_ar": "أسئلة ممتعة",
+          "title_en": "Fun Questions",
+          "duration": "3:50",
+          "description_ar": "أسئلة سريعة لاختبار الفهم بطريقة مرحة.",
+          "description_en": "Quick questions to test comprehension in a fun way.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
+      ]
+    },
+    {
+      "id": "c8",
+      "title": "English Speaking",
+      "title_ar": "تحدث الإنجليزية",
+      "title_en": "English Speaking",
+      "category": "English",
+      "price": 35,
+      "thumbnail": "/assets/images/Explore%20Courses.png",
+      "heroImage": "/assets/images/Explore%20Courses.png",
+      "overviewImage": "/assets/images/Explore%20Courses.png",
+      "description": "Speak with confidence using daily phrases",
+      "description_ar": "تحدث بثقة باستخدام عبارات يومية",
+      "description_en": "Speak with confidence using daily phrases",
+      "overview_ar": "تركّز هذه الدورة على عبارات يومية مفيدة للأطفال: التحية، المدرسة، العائلة، والطلب بأدب. الهدف هو تحسين النطق وبناء جُمل قصيرة بثقة من خلال مواقف تمثيلية وأنشطة تكرار.",
+      "overview_en": "This course focuses on useful daily phrases for kids: greetings, school, family, and polite requests. The goal is to improve pronunciation and build short confident sentences using role-play and repeat activities.",
+      "age": "6-8",
+      "seats": 10,
+      "tags": ["Stories", "Games"],
+      "lessons": [
+        {
+          "id": "l1",
+          "title": "Greetings",
+          "title_ar": "التحية",
+          "title_en": "Greetings",
+          "duration": "4:30",
+          "description_ar": "نتعلم التحيات والتعارف بطريقة سهلة وتمارين نطق قصيرة.",
+          "description_en": "Learn greetings and introductions with short pronunciation drills.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "At School",
+          "title_ar": "في المدرسة",
+          "title_en": "At School",
+          "duration": "5:45",
+          "description_ar": "عبارات مفيدة داخل الفصل: سؤال/إجابة/طلب المساعدة.",
+          "description_en": "Useful classroom phrases: ask, answer, and request help politely.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "My Family",
+          "title_ar": "عائلتي",
+          "title_en": "My Family",
+          "duration": "6:10",
+          "description_ar": "نتكلم عن العائلة ونعمل جمل قصيرة باستخدام كلمات سهلة.",
+          "description_en": "Talk about family and build short sentences with simple words.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
+      ]
+    },
+    {
+      "id": "c9",
+      "title": "Math Puzzles",
+      "title_ar": "ألغاز الرياضيات",
+      "title_en": "Math Puzzles",
+      "category": "Math",
+      "price": 29,
+      "thumbnail": "/assets/images/Tests.png",
+      "heroImage": "/assets/images/Tests.png",
+      "overviewImage": "/assets/images/Tests.png",
+      "description": "Brain-boosting puzzles and challenges",
+      "description_ar": "ألغاز وتحديات لتنشيط العقل",
+      "description_en": "Brain-boosting puzzles and challenges",
+      "overview_ar": "مجموعة ألغاز وتحديات ممتعة تساعد الأطفال على التفكير بسرعة وتحسين مهارات الحساب. كل درس يحتوي على تحدٍ بسيط مع خطوات حل واضحة، ثم تدريب سريع لزيادة الثقة.",
+      "overview_en": "A set of fun puzzles and challenges that boost mental math and quick thinking. Each lesson includes a simple challenge with clear steps, followed by short practice to build confidence.",
+      "age": "7-9",
+      "seats": 14,
+      "tags": ["Puzzles", "Score"],
+      "lessons": [
+        {
+          "id": "l1",
+          "title": "Addition Challenge",
+          "title_ar": "تحدي الجمع",
+          "title_en": "Addition Challenge",
+          "duration": "4:20",
+          "description_ar": "تحديات جمع سريعة مع طرق ذكية لتسهيل الحل.",
+          "description_en": "Fast addition challenges with smart tricks to solve quickly.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "Subtraction Challenge",
+          "title_ar": "تحدي الطرح",
+          "title_en": "Subtraction Challenge",
+          "duration": "4:50",
+          "description_ar": "تمارين طرح ممتعة تساعد على التركيز والدقة.",
+          "description_en": "Fun subtraction exercises that improve focus and accuracy.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "Quick Quiz",
+          "title_ar": "اختبار سريع",
+          "title_en": "Quick Quiz",
+          "duration": "5:30",
+          "description_ar": "سؤال وراء سؤال… اختبر سرعتك وحقق نقاط أعلى!",
+          "description_en": "Question after question… test your speed and score higher!",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        }
+      ]
+    },
+    {
+      "id": "c10",
+      "title": "English Reading",
+      "title_ar": "قراءة إنجليزية",
+      "title_en": "English Reading",
+      "category": "English",
+      "price": 0,
+      "thumbnail": "/assets/images/Play%20with%20us.png",
+      "heroImage": "/assets/images/Play%20with%20us.png",
+      "overviewImage": "/assets/images/Play%20with%20us.png",
+      "description": "Fun reading practice with simple stories",
+      "description_ar": "تدريب قراءة ممتع بقصص بسيطة",
+      "description_en": "Fun reading practice with simple stories",
+      "overview_ar": "دروس قراءة قصيرة وممتعة تساعد الطفل على النطق الصحيح وفهم الكلمات داخل سياق قصة بسيطة. كل درس يتضمن قصة قصيرة ثم نشاط كلمات وأسئلة فهم.",
+      "overview_en": "Short, fun reading lessons that help kids pronounce correctly and understand words in context. Each lesson includes a mini story followed by vocabulary practice and comprehension questions.",
+      "age": "5-7",
+      "seats": 16,
+      "tags": ["Stories"],
+      "lessons": [
+        {
+          "id": "l1",
+          "title": "Short Story 1",
+          "title_ar": "قصة قصيرة 1",
+          "title_en": "Short Story 1",
+          "duration": "5:25",
+          "description_ar": "قصة بسيطة مع كلمات سهلة لتقوية القراءة.",
+          "description_en": "A simple story with easy words to strengthen reading.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l2",
+          "title": "Short Story 2",
+          "title_ar": "قصة قصيرة 2",
+          "title_en": "Short Story 2",
+          "duration": "5:55",
+          "description_ar": "قصة جديدة مع تدريب على نطق كلمات متشابهة.",
+          "description_en": "A new story with practice on similar-sounding words.",
+          "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
+        },
+        {
+          "id": "l3",
+          "title": "Reading Game",
+          "title_ar": "لعبة القراءة",
+          "title_en": "Reading Game",
+          "duration": "4:10",
+          "description_ar": "لعبة سريعة لاختيار الكلمة الصحيحة داخل الجملة.",
+          "description_en": "A quick game to choose the correct word in a sentence.",
           "videoUrl": "https://www.w3schools.com/html/mov_bbb.mp4"
         }
       ]

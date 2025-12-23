@@ -7,6 +7,10 @@
           <div class="hero-text">
             <h1 class="hero-title">{{ displayTitle }}</h1>
             <p class="hero-subtitle">{{ displaySubtitle }}</p>
+            <div class="hero-meta">
+              <span class="hero-pill">{{ t('course.categoryLabel') }}: {{ categoryText }}</span>
+              <span v-if="course.age" class="hero-pill">{{ t('course.ageLabel') }} {{ course.age }}</span>
+            </div>
             <button v-if="!isSub" class="btn enrol-btn" @click="showSub=true">
               {{ t('courseDetail.subscribe') }}
             </button>
@@ -15,7 +19,9 @@
             </button>
           </div>
           <div class="hero-image">
-            <img :src="course.thumbnail" :alt="displayTitle" class="maths-image">
+            <div class="hero-image-card">
+              <img :src="heroImage" :alt="displayTitle" class="maths-image">
+            </div>
           </div>
         </div>
       </div>
@@ -33,10 +39,10 @@
         <h2 class="section-title">{{ t('courseDetail.overview') }}</h2>
         <div class="course-content">
           <div class="course-image">
-            <img :src="course.thumbnail" :alt="displayTitle" class="group-image">
+            <img :src="overviewImage" :alt="displayTitle" class="group-image">
           </div>
           <div class="course-description">
-            <p class="course-text">{{ displayDesc }}</p>
+            <p class="course-text">{{ displayOverview }}</p>
           </div>
         </div>
       </div>
@@ -61,9 +67,14 @@
                   <div class="accordion-icon">
                     <img src="/assets/images/icon 1.png" alt="Video Icon" class="video-icon">
                   </div>
-                  <span class="accordion-title">{{ lesson.title }}</span>
+                  <div class="accordion-title-wrap">
+                    <span class="accordion-title">{{ getLessonTitle(lesson) }}</span>
+                    <span class="accordion-duration">{{ getLessonDuration(lesson) }}</span>
+                  </div>
                   <div class="accordion-arrow">
-                    <i class="fas fa-chevron-down"></i>
+                    <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                    </svg>
                   </div>
                 </div>
               </button>
@@ -75,8 +86,7 @@
               data-bs-parent="#courseAccordion"
             >
               <div class="accordion-body">
-                {{ lesson.description || getDefaultDescription(lesson.title) }}
-                <span class="lesson-duration">{{ lesson.duration || '3:30' }}</span>
+                {{ getLessonDesc(lesson) }}
                 <div v-if="isSub" class="lesson-video">
                   <VideoPlayer :course-id="course.id" :video-url="lesson.videoUrl" />
                 </div>
@@ -101,9 +111,14 @@
             </div>
             <h3 class="course-card-title">{{ getDisplayTitle(otherCourse) }}</h3>
             <div class="tags-container">
-              <span class="tag tag-music">{{ t('course.tag.music') }}</span>
-              <span class="tag tag-games">{{ t('course.tag.games') }}</span>
-              <span class="tag tag-puzzles">{{ t('course.tag.puzzles') }}</span>
+              <span
+                v-for="tag in getTags(otherCourse)"
+                :key="tag"
+                class="tag"
+                :class="tagClass(tag)"
+              >
+                {{ tagLabel(tag) }}
+              </span>
             </div>
             <p class="course-card-description">{{ getDisplayDesc(otherCourse) }}</p>
             <div class="course-card-divider"></div>
@@ -164,6 +179,17 @@ const displayDesc = computed(() => {
   return i18n.locale === 'en' ? (course.value.description_en || course.value.description) : (course.value.description_ar || course.value.description)
 })
 
+const displayOverview = computed(() => {
+  if (!course.value) return ''
+  const ov = i18n.locale === 'en'
+    ? (course.value.overview_en || course.value.overview || '')
+    : (course.value.overview_ar || course.value.overview || '')
+  return ov || displayDesc.value
+})
+
+const heroImage = computed(() => course.value?.heroImage || course.value?.thumbnail || '')
+const overviewImage = computed(() => course.value?.overviewImage || course.value?.thumbnail || '')
+
 const displaySubtitle = computed(() => {
   if (!course.value) return ''
   return t('courseDetail.subtitle', { title: displayTitle.value.toLowerCase() })
@@ -186,6 +212,58 @@ const getDisplayTitle = (courseItem) => {
 
 const getDisplayDesc = (courseItem) => {
   return i18n.locale === 'en' ? (courseItem.description_en || courseItem.description) : (courseItem.description_ar || courseItem.description)
+}
+
+const getTags = (courseItem) => {
+  const tags = Array.isArray(courseItem.tags) ? courseItem.tags : []
+  return (tags.length ? tags : ['Music', 'Games', 'Puzzles']).slice(0, 3)
+}
+
+const tagLabel = (tag) => {
+  const keyMap = {
+    Music: 'course.tag.music',
+    Games: 'course.tag.games',
+    Puzzles: 'course.tag.puzzles',
+    Spell: 'course.tag.spell',
+    Stories: 'course.tag.stories',
+    Count: 'course.tag.count',
+    Score: 'course.tag.score'
+  }
+  const k = keyMap[tag]
+  return k ? t(k) : String(tag)
+}
+
+const tagClass = (tag) => {
+  const map = {
+    Music: 'tag-music',
+    Games: 'tag-games',
+    Puzzles: 'tag-puzzles',
+    Spell: 'tag-spell',
+    Stories: 'tag-stories',
+    Count: 'tag-count',
+    Score: 'tag-score'
+  }
+  return map[tag] || 'tag-default'
+}
+
+const getLessonTitle = (lesson) => {
+  const title = i18n.locale === 'en' ? (lesson.title_en || lesson.title) : (lesson.title_ar || lesson.title)
+  return title || lesson.title || ''
+}
+
+const getLessonDesc = (lesson) => {
+  const d = i18n.locale === 'en' ? (lesson.description_en || lesson.description) : (lesson.description_ar || lesson.description)
+  return d || getDefaultDescription(getLessonTitle(lesson))
+}
+
+const getLessonDuration = (lesson) => {
+  if (lesson.duration) return lesson.duration
+  const s = String(lesson.id || '0')
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 33 + s.charCodeAt(i)) >>> 0
+  const mins = 2 + (h % 7) // 2..8
+  const secs = (h % 2) ? '30' : '10'
+  return `${mins}:${secs}`
 }
 
 const getDefaultDescription = (lessonTitle) => {
@@ -229,10 +307,10 @@ const viewOtherCourse = (courseId) => {
 .hero-section {
   background: linear-gradient(to right, #81DFFF, #90EE90);
   width: 100%;
-  min-height: calc(100vh - 80px);
+  min-height: 420px;
   display: flex;
   align-items: center;
-  padding: 60px 0;
+  padding: 110px 0 170px;
   margin: 0;
 }
 
@@ -275,11 +353,29 @@ const viewOtherCourse = (courseId) => {
 }
 
 .hero-subtitle {
-  color: white;
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 600;
   font-size: 1.4rem;
   margin-bottom: 35px;
   line-height: 1.3;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.hero-pill {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  font-weight: 800;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  backdrop-filter: blur(6px);
 }
 
 .enrol-btn {
@@ -309,10 +405,21 @@ const viewOtherCourse = (courseId) => {
   align-items: center;
 }
 
+.hero-image-card {
+  width: min(520px, 100%);
+  border-radius: 26px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(6px);
+}
+
 .maths-image {
   max-width: 100%;
   height: auto;
-  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.1));
+  border-radius: 18px;
+  display: block;
 }
 
 /* Course Overview Section */
@@ -343,6 +450,10 @@ const viewOtherCourse = (courseId) => {
   align-items: center;
   justify-content: space-between;
   gap: 50px;
+  background: #f7fbff;
+  border: 1px solid rgba(3, 59, 98, 0.08);
+  border-radius: 24px;
+  padding: 26px;
 }
 
 .course-image {
@@ -367,6 +478,8 @@ const viewOtherCourse = (courseId) => {
   font-size: 1.1rem;
   line-height: 1.7;
   text-align: justify;
+  margin: 0;
+  white-space: pre-line;
 }
 
 /* Course Outline Section */
@@ -463,11 +576,29 @@ const viewOtherCourse = (courseId) => {
   flex: 1;
 }
 
+.accordion-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.accordion-duration {
+  color: rgba(3, 59, 98, 0.7);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
 .accordion-arrow {
   color: #00BFFF;
   font-size: 1.5rem;
   transition: transform 0.3s ease;
   flex-shrink: 0;
+}
+
+.chev {
+  width: 24px;
+  height: 24px;
 }
 
 .accordion-button:not(.collapsed) .accordion-arrow {
@@ -481,14 +612,6 @@ const viewOtherCourse = (courseId) => {
   line-height: 1.6;
   padding: 15px 0 20px 65px !important;
   border-top: none;
-}
-
-.lesson-duration {
-  color: #033B62;
-  font-weight: 400;
-  font-size: 0.9rem;
-  margin-top: 10px;
-  display: block;
 }
 
 .lesson-video {
@@ -600,6 +723,12 @@ const viewOtherCourse = (courseId) => {
   background-color: #FFD700;
 }
 
+.tag-stories { background-color: rgba(0, 191, 255, 0.20); }
+.tag-spell { background-color: rgba(255, 160, 122, 0.35); }
+.tag-count { background-color: rgba(144, 238, 144, 0.25); }
+.tag-score { background-color: rgba(255, 215, 0, 0.25); }
+.tag-default { background-color: rgba(3, 59, 98, 0.10); }
+
 .course-card-description {
   color: rgba(3, 59, 98, 0.8);
   font-weight: 400;
@@ -696,7 +825,7 @@ const viewOtherCourse = (courseId) => {
 @media (max-width: 992px) {
   .hero-section {
     min-height: auto;
-    padding: 40px 0;
+    padding: 80px 0 120px;
   }
   .hero-content {
     flex-direction: column;
@@ -727,6 +856,7 @@ const viewOtherCourse = (courseId) => {
   .course-content {
     flex-direction: column;
     gap: 40px;
+    padding: 18px;
   }
   .course-image {
     flex: 0 0 auto;

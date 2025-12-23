@@ -2,13 +2,22 @@
   <div class="profile-page">
     <header class="hero">
       <div class="hero-content">
-        <h1 class="hero-title">My profile</h1>
-        <p class="hero-subtitle">Keep learning and growing, explorer!</p>
+        <h1 class="hero-title">{{ t('profile.heroTitle') }}</h1>
+        <p class="hero-subtitle">{{ t('profile.heroSubtitle') }}</p>
       </div>
     </header>
 
     <section class="container py-3">
-      <ProfileHeaderCard />
+      <ProfileHeaderCard @edit="openEdit" />
+
+      <div v-if="!auth.isAuthenticated" class="alert alert-info mt-3 mb-3">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <div class="fw-semibold">{{ t('profile.guestCta') }}</div>
+          <button class="btn btn-primary btn-sm rounded-pill px-3" type="button" @click="goLogin">
+            {{ t('profile.loginNow') }}
+          </button>
+        </div>
+      </div>
       
       <div class="row g-3">
         <!-- Learning Progress -->
@@ -18,20 +27,59 @@
 
         <!-- Account Settings -->
         <div class="col-lg-4">
-          <AccountSettings />
+          <AccountSettings @change-password="openChangePassword" />
         </div>
       </div>
       
       <ProfileIllustration />
     </section>
+
+    <EditProfileModal v-if="showEditModal" @close="showEditModal = false" />
+    <ChangePasswordModal v-if="showPasswordModal" @close="showPasswordModal = false" />
   </div>
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth.js'
+import { useI18nStore } from '@/stores/i18n.js'
 import ProfileHeaderCard from '@/components/profile/ProfileHeaderCard.vue'
 import LearningProgress from '@/components/profile/LearningProgress.vue'
 import AccountSettings from '@/components/profile/AccountSettings.vue'
 import ProfileIllustration from '@/components/profile/ProfileIllustration.vue'
+import EditProfileModal from '@/components/profile/EditProfileModal.vue'
+import ChangePasswordModal from '@/components/profile/ChangePasswordModal.vue'
+
+const router = useRouter()
+const auth = useAuthStore()
+auth.load()
+
+const i18n = useI18nStore()
+const t = i18n.t
+
+const showEditModal = ref(false)
+const showPasswordModal = ref(false)
+
+function goLogin() {
+  router.push('/auth')
+}
+
+function openEdit() {
+  if (!auth.isAuthenticated) {
+    goLogin()
+    return
+  }
+  showEditModal.value = true
+}
+
+function openChangePassword() {
+  if (!auth.isAuthenticated) {
+    goLogin()
+    return
+  }
+  showPasswordModal.value = true
+}
 </script>
 
 <style scoped>
