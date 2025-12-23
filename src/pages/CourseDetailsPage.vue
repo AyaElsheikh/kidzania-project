@@ -11,8 +11,8 @@
               <span class="hero-pill">{{ t('course.categoryLabel') }}: {{ categoryText }}</span>
               <span v-if="course.age" class="hero-pill">{{ t('course.ageLabel') }} {{ course.age }}</span>
             </div>
-            <button v-if="!isSub" class="btn enrol-btn" @click="showSub=true">
-              {{ t('courseDetail.subscribe') }}
+            <button v-if="!isSub" class="btn enrol-btn" @click="router.push({ name: 'subscribe', params: { id: course.id } })">
+              {{ t('courseDetail.enrollment') }}
             </button>
             <button v-else class="btn enrol-btn" @click="scrollToLessons">
               {{ t('courseDetail.start') }}
@@ -128,8 +128,7 @@
       </div>
     </section>
 
-    <!-- Subscribe Modal -->
-    <SubscribeModal v-if="showSub" :course-id="course.id" @close="showSub=false" />
+    <!-- Subscribe Modal removed -->
     
     <!-- Not Found Section -->
     <section v-if="!course" class="container mx-auto px-4 py-20 text-center">
@@ -144,14 +143,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses.js'
 import { useSubscriptionStore } from '@/stores/subscription.js'
 import VideoPlayer from '@/components/VideoPlayer.vue'
-import SubscribeModal from '@/components/SubscribeModal.vue'
 import { useI18nStore } from '@/stores/i18n.js'
 
 const route = useRoute()
 const router = useRouter()
 const store = useCoursesStore()
 const sub = useSubscriptionStore()
-const showSub = ref(false)
 
 onMounted(() => { 
   store.load()
