@@ -387,6 +387,7 @@ watch(() => i18n.locale, () => {
   margin-bottom: 0.75rem;
   margin-top: 0;
   line-height: 1.2;
+  letter-spacing: 2px;
 }
 
 .auth-form {

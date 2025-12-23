@@ -286,6 +286,7 @@ const viewCourseDetails = (course) => {
   font-weight: 800;
   font-size: clamp(2.2rem, 4.8vw, 3.2rem);
   line-height: 1.05;
+  letter-spacing: 2px;
 }
 
 .hero-sub {
@@ -306,6 +307,7 @@ const viewCourseDetails = (course) => {
   font-weight: 800;
   color: #0b2a4a;
   font-size: clamp(1.9rem, 3.5vw, 2.4rem);
+  letter-spacing: 2px;
 }
 
 .section-sub {

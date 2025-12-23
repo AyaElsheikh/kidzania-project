@@ -33,13 +33,9 @@ const props = defineProps({
 // If the user uploads the images to src/assets, we would need to import them differently in Vite (e.g. glob import).
 // For now, assuming public folder or simple path is safest to avoid build errors.
 const imageSrc = computed(() => {
-  if (props.image.startsWith('http') || props.image.startsWith('//')) {
+  if (props.image.startsWith('http') || props.image.startsWith('//') || props.image.startsWith('/')) {
     return props.image;
   }
-  // Assuming images are in public/assets/ or public/assets/images/
-  // The user script had require(`@/assets/${game.image}`). 
-  // We will map this to /assets/images/ for now as a safe bet, or just /assets/ if preferred.
-  // Given previous file listings showed public/assets/images, we will try that.
   return `/assets/images/${props.image}`;
 });
 </script>
@@ -75,6 +71,7 @@ const imageSrc = computed(() => {
   font-weight: bold;
   margin-bottom: 10px;
   font-size: 18px;
+  text-align: left;
 }
 
 .card-description {
@@ -82,6 +79,7 @@ const imageSrc = computed(() => {
   font-size: 14px;
   margin-bottom: 15px;
   flex-grow: 1; /* Ensure description pushes button down if consistent height is needed */
+  text-align: left;
 }
 
 .btn-play {

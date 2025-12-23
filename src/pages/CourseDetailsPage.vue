@@ -350,6 +350,7 @@ const viewOtherCourse = (courseId) => {
   font-size: 3.5rem;
   margin-bottom: 20px;
   line-height: 1.1;
+  letter-spacing: 2px;
 }
 
 .hero-subtitle {
@@ -443,6 +444,7 @@ const viewOtherCourse = (courseId) => {
   margin-bottom: 50px;
   line-height: 1.2;
   padding-left: 0;
+  letter-spacing: 2px;
 }
 
 .course-content {
@@ -502,6 +504,7 @@ const viewOtherCourse = (courseId) => {
   text-align: left;
   margin-bottom: 50px;
   line-height: 1.2;
+  letter-spacing: 2px;
 }
 
 /* Accordion Styles */
@@ -649,6 +652,7 @@ const viewOtherCourse = (courseId) => {
   text-align: center;
   margin-bottom: 50px;
   line-height: 1.2;
+  letter-spacing: 2px;
 }
 
 .courses-grid {

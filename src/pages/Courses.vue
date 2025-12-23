@@ -65,6 +65,12 @@
           <div class="courses-list">
             <ExploreCourseCard v-for="course in pagedCourses" :key="course.id" :course="course" />
           </div>
+
+          <AppPagination 
+            :current-page="currentPage" 
+            :total-pages="totalPages" 
+            @page-change="handlePageChange"
+          />
         </div>
       </div>
     </section>
@@ -75,6 +81,7 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useCoursesStore } from '@/stores/courses.js'
 import ExploreCourseCard from '@/components/ExploreCourseCard.vue'
+import AppPagination from '@/components/AppPagination.vue'
 import { useI18nStore } from '@/stores/i18n.js'
 
 const store = useCoursesStore()
@@ -162,6 +169,11 @@ const setFilter = (value) => {
 const setPage = (page) => {
   currentPage.value = page
 }
+const handlePageChange = (page) => {
+  currentPage.value = page
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value -= 1
 }
@@ -207,6 +219,7 @@ body {
   font-weight: 800;
   line-height: 1.05;
   font-size: clamp(2.2rem, 4.8vw, 3.2rem);
+  letter-spacing: 2px;
 }
 .hero-title span {
   display: block;

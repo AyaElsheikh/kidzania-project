@@ -72,6 +72,7 @@ const getCourseTitle = (courseId) => {
   font-weight: 800;
   line-height: 1;
  font-size: clamp(2rem, 6vw, 4.5rem);
+ letter-spacing: 2px;
 }
 .hero-title span {
   display: block;
