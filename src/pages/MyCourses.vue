@@ -204,7 +204,20 @@ onMounted(() => {
   progressById.value = safeParseJSON(localStorage.getItem(LS_PROGRESS), {})
 })
 
-const courses = computed(() => store.courses.filter(c => sub.isSubscribed(c.id)))
+const DEMO_COURSE_IDS = ['c1', 'c2', 'c3']
+
+function pickDemoCourses(all) {
+  const byId = new Map(all.map(c => [c.id, c]))
+  const picked = DEMO_COURSE_IDS.map(id => byId.get(id)).filter(Boolean)
+  return picked.length ? picked : all.slice(0, 3)
+}
+
+// If the user has no subscriptions yet, show a small demo list (dummy data) so the page doesn't look empty.
+const courses = computed(() => {
+  const real = store.courses.filter(c => sub.isSubscribed(c.id))
+  if (real.length) return real
+  return pickDemoCourses(store.courses)
+})
 
 const coursesWithProgress = computed(() => {
   ensureProgress(courses.value)

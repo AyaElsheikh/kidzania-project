@@ -126,11 +126,15 @@
       </div>
     </div>
   </section>
+
+  <!-- Floating AI Chat Widget (Home only) -->
+  <HomeChatbotWidget />
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18nStore } from '@/stores/i18n.js'
+import HomeChatbotWidget from '@/components/HomeChatbotWidget.vue'
 
 const i18n = useI18nStore()
 const t = i18n.t
