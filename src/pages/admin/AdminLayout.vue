@@ -24,7 +24,7 @@ import AdminTopbar from '@/components/admin/AdminTopbar.vue'
 }
 
 .content {
-  padding: 100px 30px 30px;
+  padding: 110px 40px 40px;
 }
 
 @media (max-width: 768px) {
