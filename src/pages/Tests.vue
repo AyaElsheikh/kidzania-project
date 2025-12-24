@@ -16,7 +16,7 @@
 
       <!-- Tests Content -->
       <div class="content-wrapper w-100">
-        <div v-if="exams.length > 0" class="row g-4 cards-row">
+        <div v-if="publishedExams.length > 0" class="row g-4 cards-row">
           <div v-for="exam in paginatedExams" :key="exam.id" class="col-12 col-md-4 card-col d-flex justify-content-center">
             <TestCard
               :title="exam.title"
@@ -58,55 +58,11 @@ const coursesStore = useCoursesStore();
 const i18n = useI18nStore();
 const t = i18n.t;
 
-const exams = ref([
-  {
-    id: 101,
-    title: "English Level 1",
-    courseTitle: "English",
-    image: "/assets/games/funWithLetters.png"
-  },
-  {
-    id: 102,
-    title: "Mathematics Quiz",
-    courseTitle: "Mathematics",
-    image: "/assets/games/funWithNumbers.png"
-  },
-  {
-    id: 103,
-    title: "Science Explorer",
-    courseTitle: "Science",
-    image: "/assets/games/discoverThe Nature.png"
-  },
-  {
-    id: 104,
-    title: "Animal Kingdom",
-    courseTitle: "Biology",
-    image: "/assets/games/discoverAnimals.jpg"
-  },
-  {
-    id: 105,
-    title: "Shapes & Colors",
-    courseTitle: "Art",
-    image: "/assets/games/discoverTheShapes.png"
-  },
-  {
-    id: 106,
-    title: "Color Fun",
-    courseTitle: "Art",
-    image: "/assets/games/funWithColors.png"
-  }
-]);
-
 const currentPage = ref(1);
 const itemsPerPage = 6; 
 
 onMounted(async () => {
   await Promise.all([examsStore.load(), coursesStore.load()]);
-  
-  // Combine mock data with real data if needed, or just prioritize mock for display as requested
-  if (examsStore.exams && examsStore.exams.length > 0) {
-      exams.value = [...exams.value, ...examsStore.exams];
-  }
 });
 
 const getCourseTitle = (courseId) => {
@@ -117,17 +73,17 @@ const getCourseTitle = (courseId) => {
 
 // Placeholder for now, or meaningful logic if exams have images
 const getTestImage = (exam) => {
-    // If exam has an image property, use it. Otherwise random or default.
-    return exam.image || 'Tests.png'; 
+    return exam.image || '/assets/images/Tests.png';
 };
 
-const totalPages = computed(() => Math.ceil(exams.value.length / itemsPerPage));
+const publishedExams = computed(() => examsStore.published || []);
+const totalPages = computed(() => Math.ceil(publishedExams.value.length / itemsPerPage));
 
 const paginatedExams = computed(() => {
-  if (!exams.value) return [];
+  if (!publishedExams.value) return [];
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
-  return exams.value.slice(start, end);
+  return publishedExams.value.slice(start, end);
 });
 
 const handlePageChange = (page) => {

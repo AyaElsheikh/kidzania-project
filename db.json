@@ -1,0 +1,155 @@
+{
+  "exams": [
+    {
+      "id": "1",
+      "title": "Math Basics Quiz",
+      "courseId": "c1",
+      "status": "published",
+      "points": 10,
+      "timeLimitMins": 10,
+      "difficulty": "easy",
+      "ageGroup": "4-6",
+      "createdAt": "2025-12-23T00:00:00.000Z",
+      "updatedAt": "2025-12-23T00:00:00.000Z",
+      "publishedAt": "2025-12-23T00:00:00.000Z",
+      "questions": [
+        {
+          "id": "q1",
+          "text": "What is 5 + 3?",
+          "options": [
+            {
+              "id": "o1",
+              "text": "7",
+              "feedback": "Try again!"
+            },
+            {
+              "id": "o2",
+              "text": "8",
+              "feedback": "Great Job!"
+            },
+            {
+              "id": "o3",
+              "text": "6",
+              "feedback": "Try again!"
+            }
+          ],
+          "correctOptionId": "o2"
+        }
+      ]
+    },
+    {
+      "id": "abf0",
+      "title": "test",
+      "courseId": "c9",
+      "status": "published",
+      "points": 10,
+      "timeLimitMins": 10,
+      "difficulty": "medium",
+      "ageGroup": "4-6",
+      "createdAt": "2025-12-23T21:33:38.703Z",
+      "updatedAt": "2025-12-23T21:33:39.511Z",
+      "publishedAt": "2025-12-23T21:33:39.511Z",
+      "questions": [
+        {
+          "id": "q_7b9d85ff368ea19b4d2094f9",
+          "text": "test",
+          "options": [
+            {
+              "id": "o_11b307b9e4990819b4d2094f9",
+              "text": "1",
+              "feedback": "22"
+            },
+            {
+              "id": "o_ec7dc90ca6fcb19b4d2094f9",
+              "text": "1111",
+              "feedback": "84"
+            },
+            {
+              "id": "o_17d4a1d434237819b4d210b94",
+              "text": "pkok",
+              "feedback": "l[p"
+            }
+          ],
+          "correctOptionId": "o_17d4a1d434237819b4d210b94"
+        },
+        {
+          "id": "q_ad8becac45f34819b4d213151",
+          "text": "tyr",
+          "options": [
+            {
+              "id": "o_d1f89ad74f15519b4d213151",
+              "text": "ytry",
+              "feedback": ""
+            },
+            {
+              "id": "o_b74ef5967b7bc19b4d213151",
+              "text": "yr",
+              "feedback": ""
+            }
+          ],
+          "correctOptionId": "o_b74ef5967b7bc19b4d213151"
+        },
+        {
+          "id": "q_78b3f83c0b48119b4d2154f0",
+          "text": "ytr",
+          "options": [
+            {
+              "id": "o_c1c09e1c7be8a819b4d2154f0",
+              "text": "rtt",
+              "feedback": ""
+            },
+            {
+              "id": "o_1168535036d3f19b4d2154f0",
+              "text": "ryr",
+              "feedback": ""
+            }
+          ],
+          "correctOptionId": "o_c1c09e1c7be8a819b4d2154f0"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "id": "fd61",
+      "examId": "abf0",
+      "examTitle": "test",
+      "courseId": "c9",
+      "userId": "1766481730424",
+      "userName": "Admin",
+      "score": 10,
+      "maxScore": 30,
+      "percent": 33,
+      "stars": 1,
+      "pointsPerQuestion": 10,
+      "questionCount": 3,
+      "timeLimitMins": 10,
+      "timeSpentSecs": 13,
+      "startedAt": "2025-12-23T21:33:50.667Z",
+      "finishedAt": "2025-12-23T21:34:03.603Z",
+      "answers": [
+        {
+          "questionId": "q_7b9d85ff368ea19b4d2094f9",
+          "text": "test",
+          "selectedOptionId": "o_ec7dc90ca6fcb19b4d2094f9",
+          "correctOptionId": "o_17d4a1d434237819b4d210b94",
+          "correct": false
+        },
+        {
+          "questionId": "q_ad8becac45f34819b4d213151",
+          "text": "tyr",
+          "selectedOptionId": "o_b74ef5967b7bc19b4d213151",
+          "correctOptionId": "o_b74ef5967b7bc19b4d213151",
+          "correct": true
+        },
+        {
+          "questionId": "q_78b3f83c0b48119b4d2154f0",
+          "text": "ytr",
+          "selectedOptionId": "o_1168535036d3f19b4d2154f0",
+          "correctOptionId": "o_c1c09e1c7be8a819b4d2154f0",
+          "correct": false
+        }
+      ]
+    }
+  ]
+}

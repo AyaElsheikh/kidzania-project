@@ -14,10 +14,12 @@ import AdminDashboard from '@/pages/admin/AdminDashboard.vue'
 import AdminCourses from '@/pages/admin/AdminCourses.vue'
 import AdminSubscriptions from '@/pages/admin/AdminSubscriptions.vue'
 import AdminExams from '@/pages/admin/AdminExams.vue'
+import AdminExamBuilder from '@/pages/admin/AdminExamBuilder.vue'
 import { useAdminStore } from '@/stores/admin.js'
 import { useAuthStore } from '@/stores/auth.js'
 
 import Tests from '@/pages/Tests.vue'
+import TestPlayer from '@/pages/TestPlayer.vue'
 import PlayWithUs from '@/pages/PlayWithUs.vue'
 import KidzademyAIAssistant from '@/pages/KidzademyAIAssistant.vue'
 
@@ -35,6 +37,7 @@ const routes = [
   { path: '/my-courses', name: 'my-courses', component: MyCourses },
   { path: '/profile', name: 'profile', component: Profile },
   { path: '/tests', name: 'tests', component: Tests },
+  { path: '/test/:id', name: 'test-player', component: TestPlayer },
   { path: '/play', name: 'play', component: PlayWithUs },
   { path: '/ai-assistant', name: 'ai-assistant', component: KidzademyAIAssistant },
   {
@@ -42,7 +45,9 @@ const routes = [
       { path: '', name: 'admin-dashboard', component: AdminDashboard },
       { path: 'courses', name: 'admin-courses', component: AdminCourses },
       { path: 'subscriptions', name: 'admin-subscriptions', component: AdminSubscriptions },
-      { path: 'exams', name: 'admin-exams', component: AdminExams }
+      { path: 'exams', name: 'admin-exams', component: AdminExams },
+      { path: 'exams/new', name: 'admin-exams-new', component: AdminExamBuilder },
+      { path: 'exams/:id', name: 'admin-exams-edit', component: AdminExamBuilder, props: true }
     ]
   },
   { path: '/:pathMatch(.*)*', name: '404', component: NotFound }

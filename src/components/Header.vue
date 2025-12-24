@@ -126,12 +126,21 @@ auth.load()
   display: flex;
   align-items: center;
   gap: clamp(0.4rem, 0.4rem + 0.6vw, 0.9rem);
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .nav-tabs-list {
   flex: 1 1 auto;
   justify-content: center;
   gap: clamp(0.2rem, 0.2rem + 0.6vw, 0.85rem);
+  flex-wrap: nowrap;
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  min-width: 0;
 }
 
 .nav-actions-list {
@@ -139,6 +148,19 @@ auth.load()
   justify-content: flex-end;
   align-items: center;
   gap: clamp(0.25rem, 0.25rem + 0.6vw, 0.75rem);
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+
+/* Hide horizontal scrollbar (WebKit) */
+.nav-tabs-list::-webkit-scrollbar {
+  display: none;
+}
+
+/* Keep links on one line */
+.nav-tabs-list .nav-link,
+.nav-actions-list .nav-link {
+  white-space: nowrap;
 }
 
 /* Admin button (more professional) */
@@ -190,18 +212,8 @@ auth.load()
 }
 
 @media (max-width: 991px) {
-  .nav-layout {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-  }
-
-  .nav-tabs-list,
-  .nav-actions-list {
+  .nav-tabs-list {
     justify-content: flex-start;
-    flex-wrap: wrap;
-    row-gap: 0.25rem;
-    column-gap: 0.5rem;
   }
   
   .navbar-spacing {

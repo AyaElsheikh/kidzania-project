@@ -113,6 +113,17 @@ export default defineConfig(({ mode }) => {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url))
       }
+    },
+    server: {
+      proxy: {
+        // json-server (local dev DB)
+        // Usage: fetch('/api-data/exams') → http://localhost:3001/exams
+        '/api-data': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api-data/, '')
+        }
+      }
     }
   }
 })
