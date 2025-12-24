@@ -155,7 +155,13 @@ onMounted(() => {
   sub.load() 
 })
 
-const course = computed(() => store.getById(route.params.id))
+const course = computed(() => {
+  const c = store.getById(route.params.id)
+  if (!c) return null
+  // Do not show drafts to students
+  if ((c.status || 'published') !== 'published') return null
+  return c
+})
 const isSub = computed(() => course.value ? sub.isSubscribed(course.value.id) : false)
 
 const scrollToLessons = () => {
@@ -200,7 +206,10 @@ const categoryText = computed(() => {
 
 const otherCourses = computed(() => {
   if (!course.value) return []
-  return store.courses.filter(c => c.id !== course.value.id).slice(0, 3)
+  return store.courses
+    .filter(c => c.id !== course.value.id)
+    .filter(c => (c.status || 'published') === 'published')
+    .slice(0, 3)
 })
 
 const getDisplayTitle = (courseItem) => {

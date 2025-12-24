@@ -223,7 +223,13 @@ onMounted(() => {
   sub.load() 
 })
 
-const course = computed(() => store.getById(route.params.id))
+const course = computed(() => {
+  const c = store.getById(route.params.id)
+  if (!c) return null
+  // Do not allow subscribing to drafts
+  if ((c.status || 'published') !== 'published') return null
+  return c
+})
 
 const getDisplayTitle = (c) => {
   return i18n.locale === 'en' ? (c.title_en || c.title) : (c.title_ar || c.title)
@@ -409,11 +415,16 @@ const doSubscribe = async () => {
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 1500))
   
-  sub.subscribe(course.value.id)
-  isProcessing.value = false
-  
-  // Show Success View instead of redirecting immediately
-  showSuccess.value = true
+  try {
+    await sub.subscribe(course.value.id)
+    isProcessing.value = false
+    
+    // Show Success View instead of redirecting immediately
+    showSuccess.value = true
+  } catch (e) {
+    isProcessing.value = false
+    toast.error(e?.message || (i18n.locale === 'ar' ? 'فشل الاشتراك في الكورس.' : 'Failed to subscribe to course.'))
+  }
 }
 
 const goToMyCourses = () => {

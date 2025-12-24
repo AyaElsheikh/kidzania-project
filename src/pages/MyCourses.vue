@@ -83,7 +83,7 @@
       </div>
 
       <div v-if="activeTab !== 'certificates'">
-        <div v-if="pagedCourses.length" class="myc-grid" role="tabpanel">
+        <div v-if="hasEnrolledCourses && pagedCourses.length" class="myc-grid" role="tabpanel">
           <article v-for="c in pagedCourses" :key="c.id" class="myc-course card-soft">
             <div class="myc-course-media">
               <img :src="c.thumbnail" :alt="displayTitle(c)" class="myc-course-img" />
@@ -117,6 +117,20 @@
           </router-link>
         </div>
 
+        <div v-else-if="!hasEnrolledCourses" class="myc-encouragement card-soft">
+          <div class="encouragement-icon">📚</div>
+          <h3 class="encouragement-title">{{ i18n.locale === 'ar' ? 'ابدأ رحلتك التعليمية!' : 'Start Your Learning Journey!' }}</h3>
+          <p class="encouragement-text">
+            {{ i18n.locale === 'ar' 
+              ? 'لم تسجل في أي كورس بعد. استكشف مجموعتنا المتنوعة من الكورسات التعليمية وابدأ التعلم اليوم!' 
+              : 'You haven\'t enrolled in any courses yet. Explore our diverse collection of educational courses and start learning today!' }}
+          </p>
+          <router-link to="/courses" class="encouragement-btn">
+            {{ i18n.locale === 'ar' ? 'استكشف الكورسات' : 'Explore Courses' }}
+            <span class="encouragement-arrow" aria-hidden="true">→</span>
+          </router-link>
+        </div>
+
         <p v-else class="myc-empty">{{ t('profile.empty') }}</p>
 
         <div v-if="totalPages > 1" class="myc-pagination" aria-label="Pagination">
@@ -147,7 +161,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, onActivated, ref } from 'vue'
 import { useCoursesStore } from '@/stores/courses.js'
 import { useSubscriptionStore } from '@/stores/subscription.js'
 import { useI18nStore } from '@/stores/i18n.js'
@@ -157,11 +171,11 @@ const sub = useSubscriptionStore()
 const i18n = useI18nStore()
 const t = i18n.t
 
-const LS_PROGRESS = 'kidzania_course_progress'
+const LS_DONE = 'kidzania_course_player_done'
 const activeTab = ref('in_progress')
 const page = ref(1)
 const pageSize = 5
-const progressById = ref({})
+const doneByCourse = ref({})
 
 function safeParseJSON(raw, fallback) {
   try { return raw ? JSON.parse(raw) : fallback } catch { return fallback }
@@ -171,26 +185,14 @@ function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n))
 }
 
-function seededPercent(id) {
-  const s = String(id || '0')
-  let h = 0
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
-  return 20 + (h % 71) // 20..90
-}
-
-function ensureProgress(coursesList) {
-  const next = { ...progressById.value }
-  let changed = false
-  for (const c of coursesList) {
-    if (next[c.id] == null) {
-      next[c.id] = seededPercent(c.id)
-      changed = true
-    }
-  }
-  if (changed) {
-    progressById.value = next
-    localStorage.setItem(LS_PROGRESS, JSON.stringify(next))
-  }
+// Calculate progress based on completed lessons
+function calculateCourseProgress(course) {
+  if (!course || !course.lessons || course.lessons.length === 0) return 0
+  const courseId = String(course.id)
+  const completedLessons = doneByCourse.value[courseId] || []
+  const totalLessons = course.lessons.length
+  const completedCount = completedLessons.length
+  return Math.round((completedCount / totalLessons) * 100)
 }
 
 function setTab(tab) {
@@ -198,32 +200,63 @@ function setTab(tab) {
   page.value = 1
 }
 
+let progressInterval = null
+
 onMounted(() => {
   store.load()
   sub.load()
-  progressById.value = safeParseJSON(localStorage.getItem(LS_PROGRESS), {})
+  loadLessonProgress()
+  
+  // Listen for storage events (when lesson completion changes in another tab/window)
+  window.addEventListener('storage', handleStorageChange)
+  
+  // Poll for changes (when lesson completion changes in same tab)
+  progressInterval = setInterval(() => {
+    const current = safeParseJSON(localStorage.getItem(LS_DONE), {})
+    const currentStr = JSON.stringify(current)
+    const storedStr = JSON.stringify(doneByCourse.value)
+    if (currentStr !== storedStr) {
+      doneByCourse.value = current
+    }
+  }, 1000)
 })
 
-const DEMO_COURSE_IDS = ['c1', 'c2', 'c3']
+// Reload progress when page becomes active again (e.g., back button)
+onActivated(() => {
+  loadLessonProgress()
+})
 
-function pickDemoCourses(all) {
-  const byId = new Map(all.map(c => [c.id, c]))
-  const picked = DEMO_COURSE_IDS.map(id => byId.get(id)).filter(Boolean)
-  return picked.length ? picked : all.slice(0, 3)
+onUnmounted(() => {
+  window.removeEventListener('storage', handleStorageChange)
+  if (progressInterval) {
+    clearInterval(progressInterval)
+  }
+})
+
+function loadLessonProgress() {
+  doneByCourse.value = safeParseJSON(localStorage.getItem(LS_DONE), {})
 }
 
-// If the user has no subscriptions yet, show a small demo list (dummy data) so the page doesn't look empty.
+function handleStorageChange(e) {
+  if (e.key === LS_DONE) {
+    loadLessonProgress()
+  }
+}
+
+// Only show courses the user is actually enrolled in
 const courses = computed(() => {
-  const real = store.courses.filter(c => sub.isSubscribed(c.id))
-  if (real.length) return real
-  return pickDemoCourses(store.courses)
+  // Hide drafts from students even if they are somehow subscribed
+  return store.courses.filter(c => sub.isSubscribed(c.id) && (c.status || 'published') === 'published')
+})
+
+const hasEnrolledCourses = computed(() => {
+  return courses.value.length > 0
 })
 
 const coursesWithProgress = computed(() => {
-  ensureProgress(courses.value)
   return courses.value.map(c => ({
     ...c,
-    __progress: clamp(Number(progressById.value[c.id] ?? seededPercent(c.id)), 0, 100)
+    __progress: clamp(calculateCourseProgress(c), 0, 100)
   }))
 })
 
@@ -579,6 +612,62 @@ function displayDesc(course) {
   margin-top: 18px;
   color: rgba(3, 59, 98, 0.7);
   text-align: center;
+}
+
+.myc-encouragement {
+  margin-top: 18px;
+  text-align: center;
+  padding: 40px 30px;
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.08), rgba(255, 215, 0, 0.06));
+  border: 2px dashed rgba(0, 191, 255, 0.25);
+}
+
+.encouragement-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.encouragement-title {
+  margin: 0 0 12px;
+  font-weight: 900;
+  color: var(--primary, #033B62);
+  font-size: 1.5rem;
+}
+
+.encouragement-text {
+  margin: 0 0 24px;
+  color: rgba(3, 59, 98, 0.75);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.encouragement-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--primary-medium, #00BFFF);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 900;
+  padding: 14px 28px;
+  border-radius: 999px;
+  font-size: 1.05rem;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.encouragement-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0, 191, 255, 0.3);
+  background: #00a8e6;
+}
+
+.encouragement-arrow {
+  font-weight: 900;
+  font-size: 1.2rem;
 }
 
 .myc-pagination {

@@ -1,7 +1,7 @@
 <template>
   <nav class="topbar">
     <div class="d-flex align-items-center">
-      <h6 class="mb-0 page-title">Dashboard Overview</h6>
+      <h6 class="mb-0 page-title">{{ pageTitle }}</h6>
     </div>
 
     <div class="topbar-right">
@@ -12,20 +12,79 @@
       
       <div class="search-container">
         <i class="bi bi-search search-icon"></i>
-        <input type="text" class="form-control search-input" placeholder="Search content...">
+        <input
+          v-model.trim="q"
+          type="text"
+          class="form-control search-input"
+          placeholder="Search content..."
+          @keydown.enter.prevent="doSearch"
+        >
       </div>
 
       <div class="user-profile">
-        <img src="/assets/images/adminSara.png" alt="Profile" 
-             onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=Sara+Samy&background=0D8ABC&color=fff'" />
+        <img :src="avatarSrc" alt="Profile" @error="useFallbackAvatar" />
         <div class="user-info">
-          <h6>Sara Samy</h6>
-          <span>Editor</span>
+          <h6>{{ adminName }}</h6>
+          <span>{{ adminRole }}</span>
         </div>
       </div>
     </div>
   </nav>
 </template>
+
+<script setup>
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAdminStore } from '@/stores/admin.js'
+
+const route = useRoute()
+const router = useRouter()
+const adminStore = useAdminStore()
+
+const q = ref('')
+
+const pageTitle = computed(() => {
+  const name = route.name
+  const map = {
+    'admin-dashboard': 'Dashboard Overview',
+    'admin-courses': 'Courses',
+    'admin-courses-new': 'Create New Course',
+    'admin-courses-edit': 'Edit Course',
+    'admin-exams': 'Tests',
+    'admin-exams-new': 'Create New Test',
+    'admin-exams-edit': 'Edit Test',
+    'admin-users': 'Users'
+  }
+  return map[name] || 'Admin Panel'
+})
+
+const adminName = computed(() => adminStore.admin?.name || 'Admin User')
+const adminRole = computed(() => adminStore.admin?.role || 'editor')
+
+// Use a generic admin avatar (not a specific person)
+const avatarSrc = ref('/assets/images/admin-avatar.svg')
+function useFallbackAvatar() {
+  const n = encodeURIComponent(adminName.value || 'Admin')
+  avatarSrc.value = `https://ui-avatars.com/api/?name=${n}&background=0D8ABC&color=fff`
+}
+
+function doSearch() {
+  const query = (q.value || '').trim()
+  if (!query) return
+
+  // route to most relevant admin section
+  const lower = query.toLowerCase()
+  if (lower.includes('@') || lower.includes('user')) {
+    router.push({ name: 'admin-users', query: { q: query } })
+    return
+  }
+  if (lower.includes('test') || lower.includes('exam') || lower.includes('quiz')) {
+    router.push({ name: 'admin-exams', query: { q: query } })
+    return
+  }
+  router.push({ name: 'admin-courses', query: { q: query } })
+}
+</script>
 
 
 

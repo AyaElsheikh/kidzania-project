@@ -127,7 +127,8 @@ const withinAgeRange = (courseAge, selected) => {
 }
 
 const filteredCourses = computed(() => {
-  let list = [...store.courses]
+  // Hide drafts from users (admin can still see drafts in admin panel)
+  let list = [...store.courses].filter((c) => (c.status || 'published') === 'published')
   if (filterType.value === 'free') list = list.filter((c) => (c.price ?? 0) === 0)
   if (filterType.value === 'paid') list = list.filter((c) => (c.price ?? 0) > 0)
   list = list.filter((c) => withinAgeRange(c.age, selectedAges.value))

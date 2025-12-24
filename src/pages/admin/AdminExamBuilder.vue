@@ -8,9 +8,15 @@
 
       <div class="builder-actions">
         <button class="btn btn-outline-primary btn-pill" :disabled="isSaving" @click="saveDraft">
-          {{ isSaving ? 'Saving…' : 'Save Draft' }}
+          {{ isSaving ? 'Saving…' : (draftSaved ? 'Saved' : 'Save Draft') }}
         </button>
-        <button class="btn btn-primary btn-pill" :disabled="isSaving || !canPublish" @click="publishTest">
+        <button
+          class="btn btn-primary btn-pill"
+          type="button"
+          :disabled="isSaving"
+          :class="{ 'opacity-75': !canPublish }"
+          @click="publishTest"
+        >
           <span class="me-2" aria-hidden="true">⬆</span>
           {{ isSaving ? 'Publishing…' : 'Publish Test' }}
         </button>
@@ -60,10 +66,19 @@
                 <div class="fw-bold">Answers Options</div>
                 <div class="text-muted small">Select the right answer</div>
               </div>
-              <button class="btn btn-sm btn-light btn-pill" type="button" @click="addOption">
+              <button
+                class="btn btn-sm btn-light btn-pill"
+                type="button"
+                :disabled="activeQuestion.options.length >= 4"
+                @click="addOption"
+              >
                 + Add Option
               </button>
             </div>
+          </div>
+
+          <div class="text-muted small mb-2">
+            {{ activeQuestion.options.length }} / 4 options
           </div>
 
           <div class="options">
@@ -81,7 +96,13 @@
               <input v-model.trim="opt.text" class="form-control input-soft option-input" placeholder="Option text" />
               <input v-model.trim="opt.feedback" class="form-control input-soft feedback-input" placeholder="Feedback (optional)" />
 
-              <button class="icon-btn" type="button" title="Delete option" @click="removeOption(opt.id)">
+              <button
+                class="icon-btn"
+                type="button"
+                title="Delete option"
+                :disabled="activeQuestion.options.length <= 4"
+                @click="removeOption(opt.id)"
+              >
                 🗑
               </button>
             </div>
@@ -172,6 +193,13 @@
               <option value="8-10">8-10 Years</option>
             </select>
           </div>
+
+          <div class="mt-3">
+            <label class="form-label d-flex align-items-center gap-2">
+              <input type="checkbox" v-model="draft.allowRetry" class="form-check-input" style="width: 20px; height: 20px; cursor: pointer;" />
+              <span>Allow Retry (Students can retake this test)</span>
+            </label>
+          </div>
         </div>
 
         <div v-if="draft.status === 'published'" class="card-soft mt-3 published-badge">
@@ -187,13 +215,19 @@ import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses.js'
 import { useExamsStore } from '@/stores/exams.js'
+import { useI18nStore } from '@/stores/i18n.js'
+import { useToast } from 'vue-toastification'
 
 const route = useRoute()
 const router = useRouter()
 const examsStore = useExamsStore()
 const coursesStore = useCoursesStore()
+const i18n = useI18nStore()
+const toast = useToast()
 
 const isSaving = ref(false)
+const draftSaved = ref(false)
+const lastSavedSig = ref('')
 const activeIndex = ref(0)
 const dragFrom = ref(null)
 
@@ -206,7 +240,24 @@ const draft = reactive({
   timeLimitMins: 10,
   difficulty: 'easy',
   ageGroup: '4-6',
+  allowRetry: true,
   questions: []
+})
+
+const draftSig = computed(() => JSON.stringify({
+  title: draft.title,
+  courseId: draft.courseId,
+  points: draft.points,
+  timeLimitMins: draft.timeLimitMins,
+  difficulty: draft.difficulty,
+  ageGroup: draft.ageGroup,
+  allowRetry: draft.allowRetry,
+  questions: draft.questions
+}))
+
+watch(draftSig, (sig) => {
+  if (!lastSavedSig.value) return
+  if (sig !== lastSavedSig.value) draftSaved.value = false
 })
 
 const courses = computed(() => coursesStore.courses)
@@ -216,12 +267,63 @@ const activeQuestion = computed(() => draft.questions[activeIndex.value] || null
 const canPublish = computed(() => {
   if (!draft.title || !draft.courseId) return false
   if (!draft.questions.length) return false
-  // minimal validation: each question has text and 2+ options and a correct answer
-  return draft.questions.every(q => q.text?.trim() && q.options?.length >= 2 && q.correctOptionId)
+  // strict validation: each question has text, exactly 4 options, and a correct answer
+  return draft.questions.every((q) => !getQuestionValidationError(q))
 })
 
 function uid(prefix) {
   return `${prefix}_${Math.random().toString(16).slice(2)}${Date.now().toString(16)}`
+}
+
+function msg(ar, en) {
+  return i18n.locale === 'ar' ? ar : en
+}
+
+function normalizeText(s) {
+  return (s ?? '').toString().trim()
+}
+
+function getQuestionValidationError(q) {
+  if (!q) return msg('السؤال غير صالح.', 'Invalid question.')
+
+  if (!normalizeText(q.text)) {
+    return msg('من فضلك اكتب نص السؤال.', 'Please enter the question text.')
+  }
+
+  if (!Array.isArray(q.options) || q.options.length !== 4) {
+    return msg('يجب أن يكون عدد الاختيارات 4 بالضبط.', 'You must have exactly 4 options.')
+  }
+
+  const optionTexts = q.options.map((o) => normalizeText(o?.text))
+  if (optionTexts.some((t) => !t)) {
+    return msg('من فضلك اكتب نص كل اختيار (4 اختيارات).', 'Please fill in all 4 option texts.')
+  }
+
+  const normalized = optionTexts.map((t) => t.toLowerCase())
+  if (new Set(normalized).size !== normalized.length) {
+    return msg('لا يمكن تكرار نفس الاختيار أكثر من مرة.', 'Duplicate options are not allowed.')
+  }
+
+  if (!q.correctOptionId) {
+    return msg('يجب اختيار الإجابة الصحيحة قبل حفظ/إضافة السؤال.', 'Please select the correct answer before saving/adding the question.')
+  }
+
+  const correctExists = q.options.some((o) => o.id === q.correctOptionId)
+  if (!correctExists) {
+    return msg('الإجابة الصحيحة المختارة غير موجودة ضمن الاختيارات.', 'Selected correct answer is not one of the options.')
+  }
+
+  return null
+}
+
+function ensureQuestionIsValidOrToast(q, idxForMessage = null) {
+  const err = getQuestionValidationError(q)
+  if (!err) return true
+  const prefix = idxForMessage != null
+    ? msg(`خطأ في السؤال رقم ${idxForMessage + 1}: `, `Question ${idxForMessage + 1} error: `)
+    : ''
+  toast.error(prefix + err)
+  return false
 }
 
 function ensureAtLeastOneQuestion() {
@@ -229,10 +331,18 @@ function ensureAtLeastOneQuestion() {
 }
 
 function addQuestion() {
+  // If there is an active question, require it to be valid before creating the next one
+  if (activeQuestion.value) {
+    const ok = ensureQuestionIsValidOrToast(activeQuestion.value, activeIndex.value)
+    if (!ok) return
+  }
+
   const q = {
     id: uid('q'),
     text: '',
     options: [
+      { id: uid('o'), text: '', feedback: '' },
+      { id: uid('o'), text: '', feedback: '' },
       { id: uid('o'), text: '', feedback: '' },
       { id: uid('o'), text: '', feedback: '' }
     ],
@@ -240,6 +350,7 @@ function addQuestion() {
   }
   draft.questions.push(q)
   activeIndex.value = draft.questions.length - 1
+  toast.success(msg('تمت إضافة سؤال جديد.', 'New question added.'))
 }
 
 function removeQuestion(id) {
@@ -247,18 +358,29 @@ function removeQuestion(id) {
   if (idx === -1) return
   draft.questions.splice(idx, 1)
   activeIndex.value = Math.max(0, Math.min(activeIndex.value, draft.questions.length - 1))
+  toast.info(msg('تم حذف السؤال.', 'Question removed.'))
 }
 
 function addOption() {
   if (!activeQuestion.value) return
+  if (activeQuestion.value.options.length >= 4) {
+    toast.warning(msg('لا يمكن إضافة أكثر من 4 اختيارات.', 'You cannot add more than 4 options.'))
+    return
+  }
   activeQuestion.value.options.push({ id: uid('o'), text: '', feedback: '' })
+  toast.info(msg('تمت إضافة اختيار.', 'Option added.'))
 }
 
 function removeOption(id) {
   if (!activeQuestion.value) return
   const q = activeQuestion.value
+  if (Array.isArray(q.options) && q.options.length <= 4) {
+    toast.warning(msg('يجب أن يكون للسؤال 4 اختيارات. لا يمكن الحذف الآن.', 'A question must have 4 options. You cannot delete an option now.'))
+    return
+  }
   q.options = q.options.filter(o => o.id !== id)
   if (q.correctOptionId === id) q.correctOptionId = null
+  toast.info(msg('تم حذف الاختيار.', 'Option removed.'))
 }
 
 function onDragStart(idx) {
@@ -295,6 +417,7 @@ async function loadIfEditing() {
   draft.timeLimitMins = Number(found.timeLimitMins ?? 10)
   draft.difficulty = found.difficulty || 'easy'
   draft.ageGroup = found.ageGroup || '4-6'
+  draft.allowRetry = found.allowRetry !== undefined ? Boolean(found.allowRetry) : true
   draft.questions = Array.isArray(found.questions) ? JSON.parse(JSON.stringify(found.questions)) : []
   ensureAtLeastOneQuestion()
 }
@@ -322,6 +445,7 @@ async function saveDraft(isAuto = false) {
       timeLimitMins: draft.timeLimitMins,
       difficulty: draft.difficulty,
       ageGroup: draft.ageGroup,
+      allowRetry: draft.allowRetry,
       questions: draft.questions
     }
 
@@ -334,20 +458,67 @@ async function saveDraft(isAuto = false) {
     } else {
       await examsStore.save(draft.id, payload)
     }
+    lastSavedSig.value = draftSig.value
+    draftSaved.value = true
+    if (!isAuto) {
+      toast.success(msg('تم حفظ المسودة بنجاح.', 'Draft saved successfully.'))
+    }
+  } catch (e) {
+    if (!isAuto) {
+      toast.error((e?.message || '').toString() || msg('فشل حفظ المسودة.', 'Failed to save draft.'))
+    }
   } finally {
     isSaving.value = false
   }
 }
 
 async function publishTest() {
-  if (!canPublish.value) return
   if (isSaving.value) return
+
+  // Validate before publishing (show the first error and jump to it)
+  if (!draft.title || !draft.courseId) {
+    toast.error(msg('من فضلك اكتب عنوان الامتحان واختر الكورس.', 'Please enter the test title and select a course.'))
+    return
+  }
+  if (!draft.questions.length) {
+    toast.error(msg('أضف سؤالًا واحدًا على الأقل.', 'Add at least one question.'))
+    return
+  }
+  for (let i = 0; i < draft.questions.length; i++) {
+    const ok = ensureQuestionIsValidOrToast(draft.questions[i], i)
+    if (!ok) {
+      activeIndex.value = i
+      return
+    }
+  }
+
   isSaving.value = true
   try {
+    // For new exam: create draft directly (don't rely on saveDraft which might be blocked by isSaving)
     if (!draft.id) {
-      await saveDraft(false)
+      const payload = {
+        title: draft.title || 'Untitled test',
+        courseId: draft.courseId || '',
+        status: 'draft',
+        points: draft.points,
+        timeLimitMins: draft.timeLimitMins,
+        difficulty: draft.difficulty,
+        ageGroup: draft.ageGroup,
+        allowRetry: draft.allowRetry,
+        questions: draft.questions
+      }
+      const created = await examsStore.createDraft(payload)
+      if (!created?.id) {
+        throw new Error(msg('فشل إنشاء المسودة.', 'Failed to create draft.'))
+      }
+      draft.id = created.id
+      // Update URL if needed
+      if (route.params.id !== String(draft.id)) {
+        router.replace({ name: 'admin-exams-edit', params: { id: draft.id } })
+      }
     }
-    if (!draft.id) return
+
+    // Save latest data before publishing
     await examsStore.save(draft.id, {
       title: draft.title,
       courseId: draft.courseId,
@@ -355,11 +526,19 @@ async function publishTest() {
       timeLimitMins: draft.timeLimitMins,
       difficulty: draft.difficulty,
       ageGroup: draft.ageGroup,
+      allowRetry: draft.allowRetry,
       questions: draft.questions
     })
+
+    // Publish
     await examsStore.publish(draft.id)
     draft.status = 'published'
+    toast.success(msg('تم نشر الامتحان بنجاح.', 'Test published successfully.'))
     router.push({ name: 'admin-exams' })
+  } catch (e) {
+    const errorMsg = e?.message || msg('فشل نشر الامتحان.', 'Failed to publish test.')
+    toast.error(errorMsg)
+    console.error('Publish error:', e)
   } finally {
     isSaving.value = false
   }
@@ -373,6 +552,7 @@ watch(
     timeLimitMins: draft.timeLimitMins,
     difficulty: draft.difficulty,
     ageGroup: draft.ageGroup,
+    allowRetry: draft.allowRetry,
     questions: draft.questions
   }),
   () => scheduleAutosave(),
@@ -526,6 +706,14 @@ onMounted(loadIfEditing)
   border-radius: 12px;
   display: grid;
   place-items: center;
+  color: #64748b;
+}
+.icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.icon-btn:disabled:hover {
+  background: transparent;
   color: #64748b;
 }
 .icon-btn:hover {

@@ -48,6 +48,29 @@
             <input v-model.trim="form.phone" class="form-control" type="tel" :placeholder="t('auth.enterPhone')" />
             <div v-if="errors.phone" class="text-danger small mt-1">{{ errors.phone }}</div>
           </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ i18n.locale === 'ar' ? 'الفئة العمرية' : 'Age Group' }}</label>
+            <select v-model="form.age" class="form-select">
+              <option value="">{{ i18n.locale === 'ar' ? 'اختر العمر' : 'Select age' }}</option>
+              <option value="3-5">3-5</option>
+              <option value="4-6">4-6</option>
+              <option value="5-7">5-7</option>
+              <option value="6-8">6-8</option>
+              <option value="7-9">7-9</option>
+              <option value="8-10">8-10</option>
+            </select>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">{{ i18n.locale === 'ar' ? 'الصف الدراسي' : 'Grade' }}</label>
+            <select v-model="form.grade" class="form-select">
+              <option value="">{{ i18n.locale === 'ar' ? 'اختر الصف' : 'Select grade' }}</option>
+              <option value="Grade 1-3">Grade 1-3</option>
+              <option value="Grade 3-4">Grade 3-4</option>
+              <option value="Grade 5+">Grade 5+</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -76,13 +99,15 @@ const t = i18n.t
 
 const saving = ref(false)
 const errors = reactive({ name: '', email: '', phone: '', avatar: '' })
-const form = reactive({ name: '', email: '', phone: '', avatar: '' })
+const form = reactive({ name: '', email: '', phone: '', avatar: '', age: '', grade: '' })
 
 watchEffect(() => {
   form.name = auth.user?.name || ''
   form.email = auth.user?.email || ''
   form.phone = auth.user?.phone || ''
   form.avatar = auth.user?.avatar || ''
+  form.age = auth.user?.age || ''
+  form.grade = auth.user?.grade || ''
 })
 
 const previewAvatar = computed(() => form.avatar || '/assets/images/child.png')
@@ -138,11 +163,13 @@ async function save() {
   if (!validate()) return
   saving.value = true
   try {
-    auth.updateProfile({
+    await auth.updateProfile({
       name: form.name.trim(),
       email: form.email.trim(),
       phone: form.phone.trim(),
-      avatar: form.avatar
+      avatar: form.avatar,
+      age: form.age,
+      grade: form.grade
     })
     saving.value = false
     resetErrors()

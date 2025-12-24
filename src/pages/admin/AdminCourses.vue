@@ -9,7 +9,7 @@
           Manage learning content, track progress, and organize subjects.
         </p>
       </div>
-      <button class="btn btn-primary rounded-pill px-4" @click="openModal()">
+      <button class="btn btn-primary rounded-pill px-4" @click="goCreate">
         <i class="bi bi-plus"></i> Add new course
       </button>
     </div>
@@ -89,7 +89,7 @@
       <div class="d-flex justify-content-between align-items-center mt-3" v-if="filteredCourses.length > 0">
         <span class="text-muted">Showing <strong>{{ rangeStart }}–{{ rangeEnd }}</strong> of {{ filteredCourses.length }} results</span>
 
-        <ul class="pagination mb-0">
+        <ul class="pagination mb-0 admin-pagination">
           <li class="page-item" :class="{ disabled: currentPage === 1 }">
             <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
           </li>
@@ -145,7 +145,16 @@
              
              <div class="col-md-6">
                 <label class="form-label">Price</label> 
-                <input type="number" v-model="form.price" class="form-control" />
+                <input type="number" v-model="form.price" class="form-control" min="0" step="0.01" />
+             </div>
+             
+             <div class="col-md-6">
+                <label class="form-label">Grade</label>
+                <select v-model="form.grade" class="form-select">
+                  <option value="Grade 1-3">Grade 1-3</option>
+                  <option value="Grade 3-4">Grade 3-4</option>
+                  <option value="Grade 5+">Grade 5+</option>
+                </select>
              </div>
              
              <div class="col-12">
@@ -153,17 +162,28 @@
                 <!-- File Input -->
                 <input type="file" @change="onFileChange" class="form-control" accept="image/*" />
                 
+                <!-- URL Input -->
+                <input 
+                  type="text" 
+                  v-model="form.thumbnail" 
+                  class="form-control mt-2" 
+                  placeholder="Or enter image URL"
+                />
+                
                 <!-- Preview -->
                 <div v-if="form.thumbnail" class="mt-2">
                   <small class="text-muted d-block mb-1">Preview:</small>
-                  <img :src="form.thumbnail" alt="Preview" class="rounded" style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #eee;">
+                  <img :src="form.thumbnail" alt="Preview" class="rounded" style="width: 120px; height: 120px; object-fit: cover; border: 1px solid #eee;" @error="form.thumbnail = '/assets/images/topcourses1.png'">
                 </div>
              </div>
            </div>
            
            <div class="d-flex justify-content-end gap-2 mt-4">
-             <button type="button" class="btn btn-secondary" @click="showModal = false">Cancel</button>
-             <button type="submit" class="btn btn-primary">Save Course</button>
+             <button type="button" class="btn btn-secondary" @click="showModal = false" :disabled="isSaving">Cancel</button>
+             <button type="submit" class="btn btn-primary" :disabled="isSaving">
+               <span v-if="isSaving">Saving...</span>
+               <span v-else>{{ editingId ? 'Update Course' : 'Create Course' }}</span>
+             </button>
            </div>
         </form>
       </div>
@@ -173,10 +193,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, reactive } from 'vue'
+import { ref, computed, onMounted, reactive, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses.js'
+import { useToast } from 'vue-toastification'
 
+const route = useRoute()
+const router = useRouter()
 const store = useCoursesStore()
+const toast = useToast()
 
 // Load data
 onMounted(() => {
@@ -184,9 +210,14 @@ onMounted(() => {
 })
 
 // Filters
-const searchQuery = ref('')
+const searchQuery = ref(String(route.query.q || ''))
 const filterSubject = ref('')
 const filterGrade = ref('')
+
+watch(() => route.query.q, (q) => {
+  searchQuery.value = String(q || '')
+  currentPage.value = 1
+})
 
 // Pagination
 const currentPage = ref(1)
@@ -259,29 +290,22 @@ const form = reactive({
   grade: 'Grade 1-3' // Default
 })
 
+const goCreate = () => {
+  try {
+    router.push({ name: 'admin-courses-new' })
+  } catch (error) {
+    console.error('Navigation error:', error)
+    toast.error('Failed to navigate to create course page.')
+  }
+}
+
 const openModal = (course = null) => {
   if (course) {
-    editingId.value = course.id
-    form.title_en = course.title_en || course.title
-    form.title_ar = course.title_ar || ''
-    form.description_en = course.description_en || course.description || ''
-    form.description_ar = course.description_ar || ''
-    form.category = course.category
-    form.price = course.price
-    form.thumbnail = course.thumbnail
-    form.grade = course.grade || 'Grade 1-3'
+    // Navigate to edit page instead of modal
+    router.push({ name: 'admin-courses-edit', params: { id: course.id } })
   } else {
-    editingId.value = null
-    form.title_en = ''
-    form.title_ar = ''
-    form.description_en = ''
-    form.description_ar = ''
-    form.category = 'Math'
-    form.price = 0
-    form.thumbnail = '/assets/math.png' // Default placeholder
-    form.grade = 'Grade 1-3'
+    goCreate()
   }
-  showModal.value = true
 }
 
 const onFileChange = (e) => {
@@ -295,36 +319,108 @@ const onFileChange = (e) => {
   }
 }
 
-const save = () => {
-  const courseData = {
-    id: editingId.value || `c${Date.now()}`,
-    title: form.title_en,
-    title_en: form.title_en,
-    title_ar: form.title_ar,
-    description: form.description_en,
-    description_en: form.description_en,
-    description_ar: form.description_ar,
-    category: form.category,
-    price: form.price,
-    thumbnail: form.thumbnail,
-    grade: form.grade,
-    // defaults
-    age: '4-8',
-    seats: 10,
-    lessons: [] 
+const isSaving = ref(false)
+
+const save = async () => {
+  // Validation
+  if (!form.title_en || !form.title_en.trim()) {
+    toast.error('Please enter a course title (English).')
+    return
   }
   
-  if (editingId.value) {
-    store.updateCourse(courseData)
-  } else {
-    store.addCourse(courseData)
+  if (!form.category) {
+    toast.error('Please select a subject.')
+    return
   }
-  showModal.value = false
+  
+  if (isSaving.value) return
+  
+  isSaving.value = true
+  
+  try {
+    const courseData = {
+      title: form.title_en.trim(),
+      title_en: form.title_en.trim(),
+      title_ar: form.title_ar?.trim() || form.title_en.trim(),
+      description: form.description_en?.trim() || '',
+      description_en: form.description_en?.trim() || '',
+      description_ar: form.description_ar?.trim() || '',
+      category: form.category,
+      price: Number(form.price) || 0,
+      thumbnail: form.thumbnail || '/assets/images/topcourses1.png',
+      grade: form.grade || 'Grade 1-3',
+      // Defaults for new courses
+      age: '4-8',
+      seats: 10,
+      lessons: editingId.value ? undefined : [] // Keep existing lessons when editing
+    }
+    
+    if (editingId.value) {
+      // Update existing course
+      const existingCourse = store.getById(editingId.value)
+      if (existingCourse) {
+        // Preserve existing data that wasn't in the form
+        courseData.id = editingId.value
+        courseData.lessons = existingCourse.lessons || []
+        courseData.heroImage = existingCourse.heroImage || courseData.thumbnail
+        courseData.overviewImage = existingCourse.overviewImage || courseData.thumbnail
+        courseData.overview_ar = existingCourse.overview_ar || courseData.description_ar
+        courseData.overview_en = existingCourse.overview_en || courseData.description_en
+        courseData.tags = existingCourse.tags || []
+        courseData.age = existingCourse.age || '4-8'
+        courseData.seats = existingCourse.seats || 10
+        courseData.createdAt = existingCourse.createdAt
+        courseData.updatedAt = new Date().toISOString()
+      }
+      
+      await store.updateCourse(courseData)
+      toast.success('Course updated successfully.')
+    } else {
+      // Create new course
+      courseData.id = `c${Date.now()}`
+      courseData.heroImage = courseData.thumbnail
+      courseData.overviewImage = courseData.thumbnail
+      courseData.overview_ar = courseData.description_ar
+      courseData.overview_en = courseData.description_en
+      courseData.tags = []
+      courseData.createdAt = new Date().toISOString()
+      courseData.updatedAt = new Date().toISOString()
+      
+      await store.addCourse(courseData)
+      toast.success('Course created successfully.')
+    }
+    
+    showModal.value = false
+    // Reset form
+    editingId.value = null
+    form.title_en = ''
+    form.title_ar = ''
+    form.description_en = ''
+    form.description_ar = ''
+    form.category = 'Math'
+    form.price = 0
+    form.thumbnail = ''
+    form.grade = 'Grade 1-3'
+  } catch (e) {
+    const errorMsg = e?.message || 'Failed to save course.'
+    toast.error(errorMsg)
+    console.error('Save course error:', e)
+  } finally {
+    isSaving.value = false
+  }
 }
 
-const remove = (id) => {
-  if (confirm('Are you sure you want to delete this course?')) {
-    store.deleteCourse(id)
+const remove = async (id) => {
+  const confirmed = window.confirm('Are you sure you want to delete this course?')
+  if (!confirmed) return
+  
+  try {
+    await store.deleteCourse(id)
+    toast.success('Course deleted successfully.')
+  } catch (e) {
+    const errorMsg = e?.message || 'Failed to delete course.'
+    toast.error(errorMsg)
+    console.error('Delete course error:', e)
   }
 }
 </script>
@@ -416,28 +512,48 @@ const remove = (id) => {
   color: #dc3545;
 }
 
-/* Pagination */
-.pagination .page-link {
-  color: #6b7280;
-  border: none;
-  margin: 0 4px;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+/* Pagination (Admin dashboard style) */
+.admin-pagination {
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+.admin-pagination .page-link {
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 800;
+  margin: 0;
+  border-radius: 999px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
-.pagination .page-item.active .page-link {
-  background-color: #00aaff;
+.admin-pagination .page-item:not(:first-child):not(:last-child) .page-link {
+  width: 36px;
+  padding: 0;
+}
+.admin-pagination .page-item.active .page-link {
+  background: #00aaff;
   color: #fff;
+  box-shadow: 0 10px 22px rgba(0, 170, 255, 0.28);
 }
-.pagination .page-item.disabled .page-link {
-  color: #ccc;
+.admin-pagination .page-item.disabled .page-link {
+  opacity: 0.55;
   cursor: not-allowed;
+  background: #f8fafc;
 }
-.pagination .page-link:hover:not(.active) {
-  background-color: #f1f5f9;
+.admin-pagination .page-link:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+.admin-pagination .page-item.disabled .page-link:hover,
+.admin-pagination .page-item.active .page-link:hover {
+  transform: none;
 }
 
 /* Modal Simple Styles */

@@ -1,77 +1,59 @@
 import { defineStore } from 'pinia'
-import data from '@/data/courses.json'
-
-const LS_CUSTOM = 'kidzania_courses_custom'
-const LS_OVERRIDES = 'kidzania_courses_overrides'
-const LS_HIDDEN = 'kidzania_courses_hidden'
+import { coursesApi } from '@/api/coursesApi.js'
 
 export const useCoursesStore = defineStore('courses', {
   state: () => ({
     courses: [],
-    custom: [],
-    overrides: {},
-    hidden: []
+    isLoading: false,
+    error: null
   }),
   getters: {
     byCategory: (state) => (cat) => state.courses.filter(c => c.category === cat),
     getById: (state) => (id) => state.courses.find(c => c.id === id)
   },
   actions: {
-    load() {
+    async load() {
+      this.isLoading = true
+      this.error = null
       try {
-        const raw = localStorage.getItem(LS_CUSTOM)
-        this.custom = raw ? JSON.parse(raw) : []
-      } catch { this.custom = [] }
+        const list = await coursesApi.list()
+        this.courses = Array.isArray(list) ? list : []
+      } catch (e) {
+        this.error = e?.message || 'Failed to load courses'
+        this.courses = []
+        console.error('Failed to load courses:', e)
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async addCourse(course) {
       try {
-        const ov = localStorage.getItem(LS_OVERRIDES)
-        this.overrides = ov ? JSON.parse(ov) : {}
-      } catch { this.overrides = {} }
+        const created = await coursesApi.create(course)
+        await this.load()
+        return created
+      } catch (e) {
+        this.error = e?.message || 'Failed to add course'
+        throw e
+      }
+    },
+    async updateCourse(course) {
       try {
-        const hid = localStorage.getItem(LS_HIDDEN)
-        this.hidden = hid ? JSON.parse(hid) : []
-      } catch { this.hidden = [] }
-
-      const base = data.courses
-        .filter(c => !this.hidden.includes(c.id))
-        .map(c => ({ ...c, ...(this.overrides[c.id] || {}) }))
-      this.courses = [...base, ...this.custom]
-    },
-    addCourse(course) {
-      this.custom.push(course)
-      localStorage.setItem(LS_CUSTOM, JSON.stringify(this.custom))
-      this.courses.push(course)
-    },
-    updateCourse(course) {
-      // update custom if exists
-      const idx = this.custom.findIndex(c => c.id === course.id)
-      if (idx !== -1) {
-        this.custom[idx] = { ...this.custom[idx], ...course }
-        localStorage.setItem(LS_CUSTOM, JSON.stringify(this.custom))
-      } else {
-        // override base course
-        this.overrides[course.id] = { ...((this.overrides[course.id]) || {}), ...course }
-        localStorage.setItem(LS_OVERRIDES, JSON.stringify(this.overrides))
+        const updated = await coursesApi.update(course.id, course)
+        await this.load()
+        return updated
+      } catch (e) {
+        this.error = e?.message || 'Failed to update course'
+        throw e
       }
-      // refresh effective list
-      this.load()
     },
-    deleteCourse(id) {
-      // try remove from custom
-      const before = this.custom.length
-      this.custom = this.custom.filter(c => c.id !== id)
-      if (this.custom.length !== before) {
-        localStorage.setItem(LS_CUSTOM, JSON.stringify(this.custom))
-      } else {
-        // mark base course hidden
-        if (!this.hidden.includes(id)) this.hidden.push(id)
-        localStorage.setItem(LS_HIDDEN, JSON.stringify(this.hidden))
+    async deleteCourse(id) {
+      try {
+        await coursesApi.remove(id)
+        await this.load()
+      } catch (e) {
+        this.error = e?.message || 'Failed to delete course'
+        throw e
       }
-      // also clean overrides
-      if (this.overrides[id]) {
-        delete this.overrides[id]
-        localStorage.setItem(LS_OVERRIDES, JSON.stringify(this.overrides))
-      }
-      this.load()
     }
   }
 })

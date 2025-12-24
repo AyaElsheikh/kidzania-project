@@ -46,6 +46,27 @@
                   />
                   <div class="invalid-feedback" v-if="errors.phone">{{ errors.phone }}</div>
                 </div>
+
+                <div class="form-group">
+                  <label class="form-label">{{ i18n.locale === 'ar' ? 'الفئة العمرية' : 'Age Group' }}</label>
+                  <select
+                    v-model="age"
+                    class="form-control"
+                    :class="inputState('age')"
+                    required
+                    @change="touched.age = true; validateField('age')"
+                    @blur="touched.age = true; validateField('age')"
+                  >
+                    <option value="">{{ i18n.locale === 'ar' ? 'اختر العمر' : 'Select age' }}</option>
+                    <option value="3-5">3-5</option>
+                    <option value="4-6">4-6</option>
+                    <option value="5-7">5-7</option>
+                    <option value="6-8">6-8</option>
+                    <option value="7-9">7-9</option>
+                    <option value="8-10">8-10</option>
+                  </select>
+                  <div class="invalid-feedback" v-if="errors.age">{{ errors.age }}</div>
+                </div>
               </template>
 
               <div class="form-group">
@@ -129,8 +150,9 @@
                 </a>
               </div>
 
-              <button class="auth-submit-btn" type="submit">
-                {{ mode === 'login' ? t('auth.signin') : t('auth.signup') }}
+              <button class="auth-submit-btn" type="submit" :disabled="isSubmitting">
+                <span v-if="isSubmitting">{{ i18n.locale === 'ar' ? 'جاري المعالجة...' : 'Processing...' }}</span>
+                <span v-else>{{ mode === 'login' ? t('auth.signin') : t('auth.signup') }}</span>
               </button>
 
               <div class="divider">
@@ -181,11 +203,12 @@
 
 
 <script setup>
-import { reactive, ref, watch, computed } from 'vue'
+import { reactive, ref, watch, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useAdminStore } from '@/stores/admin.js'
 import { useI18nStore } from '@/stores/i18n.js'
+import { useToast } from 'vue-toastification'
 
 const i18n = useI18nStore()
 const t = i18n.t
@@ -196,6 +219,7 @@ const showPass2 = ref(false)
 const remember = ref(false)
 const name = ref('')
 const phone = ref('')
+const age = ref('')
 const email = ref('')
 const password = ref('')
 const password2 = ref('')
@@ -203,6 +227,7 @@ const errors = reactive({})
 const touched = reactive({
   name: false,
   phone: false,
+  age: false,
   email: false,
   password: false,
   password2: false
@@ -211,12 +236,17 @@ const touched = reactive({
 const router = useRouter()
 const auth = useAuthStore()
 const adminStore = useAdminStore()
-auth.load()
-adminStore.load()
+const toast = useToast()
+
+onMounted(async () => {
+  await auth.load()
+  await adminStore.load()
+})
 
 const resetErrors = () => {
   errors.name = ''
   errors.phone = ''
+  errors.age = ''
   errors.email = ''
   errors.password = ''
   errors.password2 = ''
@@ -237,12 +267,16 @@ const validateField = (field) => {
     if (field === 'phone' || field === 'all') {
       errors.phone = /^[0-9+\-() ]{6,20}$/.test(phone.value) ? '' : t('auth.errors.phoneInvalid')
     }
+    if (field === 'age' || field === 'all') {
+      errors.age = String(age.value || '').trim() ? '' : (i18n.locale === 'ar' ? 'اختر الفئة العمرية.' : 'Please select an age group.')
+    }
     if (field === 'password2' || field === 'all' || field === 'password') {
       errors.password2 = password2.value === password.value ? '' : t('auth.errors.passwordMismatch')
     }
   } else {
     errors.name = ''
     errors.phone = ''
+    errors.age = ''
     errors.password2 = ''
   }
 }
@@ -257,43 +291,89 @@ const inputState = (field) => ({
   'is-valid': touched[field] && !errors[field]
 })
 
-const onSubmit = () => {
-  if (!validate()) return
+const isSubmitting = ref(false)
+
+const onSubmit = async () => {
+  if (!validate()) {
+    toast.error(i18n.locale === 'ar' ? 'من فضلك أصلح الأخطاء في النموذج.' : 'Please fix the errors in the form.')
+    return
+  }
+  
+  if (isSubmitting.value) return
+  
+  isSubmitting.value = true
+  
   try {
     if (mode.value === 'login') {
       // admin shortcut
       if (email.value === 'admin@gmail.com' && password.value === 'admin123') {
-        // Force setup to ensure these credentials work even if another admin exists
-        adminStore.setup({ name: 'Admin', username: 'admin@gmail.com', password: 'admin123' })
+        try {
+          await adminStore.setup({ name: 'Admin', username: 'admin@gmail.com', password: 'admin123' })
+        } catch (e) {
+          // Admin might already exist, continue
+        }
         
-        adminStore.login({ username: 'admin@gmail.com', password: 'admin123' })
+        const adminLoggedIn = await adminStore.login({ username: 'admin@gmail.com', password: 'admin123' })
         
-        // Also ensure user exists in auth store so header shows generic logged in state if needed
-        auth.loginOrRegister({
-          name: 'Admin',
-          phone: '0000000000',
-          email: 'admin@gmail.com',
-          password: 'admin123'
-        })
-        
-        router.push('/admin')
-        return
+        if (adminLoggedIn) {
+          // Also ensure user exists in auth store so header shows generic logged in state if needed
+          try {
+            await auth.loginOrRegister({
+              name: 'Admin',
+              phone: '0000000000',
+              email: 'admin@gmail.com',
+              password: 'admin123'
+            })
+          } catch (e) {
+            // User might already exist, continue
+          }
+          
+          toast.success(i18n.locale === 'ar' ? 'تم تسجيل الدخول كمسؤول بنجاح!' : 'Logged in as admin successfully!')
+          router.push('/admin')
+          return
+        } else {
+          toast.error(i18n.locale === 'ar' ? 'فشل تسجيل الدخول كمسؤول.' : 'Failed to login as admin.')
+          return
+        }
       }
-      auth.login({ email: email.value.trim(), password: password.value })
+      
+      // Regular user login
+      await auth.login({ email: email.value.trim(), password: password.value })
+      toast.success(i18n.locale === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Logged in successfully!')
+      router.push('/profile')
     } else {
-      auth.register({
+      // Signup
+      await auth.register({
         name: name.value.trim(),
         phone: phone.value.trim(),
+        age: age.value,
         email: email.value.trim(),
         password: password.value
       })
+      toast.success(i18n.locale === 'ar' ? 'تم إنشاء الحساب بنجاح!' : 'Account created successfully!')
+      router.push('/profile')
     }
-    router.push('/profile')
   } catch (err) {
-    if (err.message === 'no-user') errors.email = t('auth.errors.noUser')
-    else if (err.message === 'bad-pass') errors.password = t('auth.errors.badPassword')
-    else if (err.message === 'user-exists') errors.email = t('auth.errors.userExists')
-    else errors.email = t('auth.errors.general')
+    const errorMsg = err?.message || ''
+    if (errorMsg === 'no-user' || errorMsg.includes('no-user')) {
+      errors.email = t('auth.errors.noUser')
+      toast.error(i18n.locale === 'ar' ? 'البريد الإلكتروني غير مسجل.' : 'Email not registered.')
+    } else if (errorMsg === 'suspended' || errorMsg.includes('suspended')) {
+      errors.email = i18n.locale === 'ar' ? 'هذا الحساب موقوف. تواصل مع الدعم.' : 'This account is suspended. Please contact support.'
+      toast.error(i18n.locale === 'ar' ? 'هذا الحساب موقوف. تواصل مع الدعم.' : 'This account is suspended. Please contact support.')
+    } else if (errorMsg === 'bad-pass' || errorMsg.includes('bad-pass')) {
+      errors.password = t('auth.errors.badPassword')
+      toast.error(i18n.locale === 'ar' ? 'كلمة المرور غير صحيحة.' : 'Incorrect password.')
+    } else if (errorMsg === 'user-exists' || errorMsg.includes('user-exists')) {
+      errors.email = t('auth.errors.userExists')
+      toast.error(i18n.locale === 'ar' ? 'البريد الإلكتروني مسجل بالفعل.' : 'Email already registered.')
+    } else {
+      errors.email = t('auth.errors.general')
+      toast.error(i18n.locale === 'ar' ? 'حدث خطأ. حاول مرة أخرى.' : 'An error occurred. Please try again.')
+    }
+    console.error('Auth error:', err)
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -302,13 +382,14 @@ const resetPassword = () => {
     errors.email = t('auth.errors.enterEmailFirst')
     return
   }
-  alert(t('auth.resetLinkSent'))
+  toast.success(t('auth.resetLinkSent'))
 }
 
 watch(mode, () => {
   resetErrors()
   touched.name = false
   touched.phone = false
+  touched.age = false
   touched.email = false
   touched.password = false
   touched.password2 = false
@@ -526,14 +607,20 @@ watch(() => i18n.locale, () => {
   letter-spacing: 0.01em;
 }
 
-.auth-submit-btn:hover {
+.auth-submit-btn:hover:not(:disabled) {
   background-color: #00a8e6;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 191, 255, 0.35);
 }
 
-.auth-submit-btn:active {
+.auth-submit-btn:active:not(:disabled) {
   transform: translateY(0);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .divider {

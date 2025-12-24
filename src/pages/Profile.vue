@@ -40,7 +40,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useI18nStore } from '@/stores/i18n.js'
@@ -53,7 +53,9 @@ import ChangePasswordModal from '@/components/profile/ChangePasswordModal.vue'
 
 const router = useRouter()
 const auth = useAuthStore()
-auth.load()
+onMounted(async () => {
+  await auth.load()
+})
 
 const i18n = useI18nStore()
 const t = i18n.t

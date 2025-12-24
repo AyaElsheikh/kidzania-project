@@ -179,7 +179,13 @@ onMounted(() => {
   doneByCourse.value = safeParseJSON(localStorage.getItem(LS_DONE), {})
 })
 
-const course = computed(() => store.getById(route.params.id))
+const course = computed(() => {
+  const c = store.getById(route.params.id)
+  if (!c) return null
+  // Do not show drafts to students
+  if ((c.status || 'published') !== 'published') return null
+  return c
+})
 const isSub = computed(() => course.value ? sub.isSubscribed(course.value.id) : false)
 
 watch(course, (c) => {

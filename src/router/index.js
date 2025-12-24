@@ -15,6 +15,8 @@ import AdminCourses from '@/pages/admin/AdminCourses.vue'
 import AdminSubscriptions from '@/pages/admin/AdminSubscriptions.vue'
 import AdminExams from '@/pages/admin/AdminExams.vue'
 import AdminExamBuilder from '@/pages/admin/AdminExamBuilder.vue'
+import AdminCourseBuilder from '@/pages/admin/AdminCourseBuilder.vue'
+import AdminUsers from '@/pages/admin/AdminUsers.vue'
 import { useAdminStore } from '@/stores/admin.js'
 import { useAuthStore } from '@/stores/auth.js'
 
@@ -44,6 +46,9 @@ const routes = [
     path: '/admin', component: AdminLayout, children: [
       { path: '', name: 'admin-dashboard', component: AdminDashboard },
       { path: 'courses', name: 'admin-courses', component: AdminCourses },
+      { path: 'courses/new', name: 'admin-courses-new', component: AdminCourseBuilder },
+      { path: 'courses/:id', name: 'admin-courses-edit', component: AdminCourseBuilder, props: true },
+      { path: 'users', name: 'admin-users', component: AdminUsers },
       { path: 'subscriptions', name: 'admin-subscriptions', component: AdminSubscriptions },
       { path: 'exams', name: 'admin-exams', component: AdminExams },
       { path: 'exams/new', name: 'admin-exams-new', component: AdminExamBuilder },

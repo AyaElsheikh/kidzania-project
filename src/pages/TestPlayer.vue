@@ -40,6 +40,11 @@
           <h2 class="finish-title">{{ titleText }}</h2>
           <div class="finish-sub text-muted">{{ subtitleText }}</div>
 
+          <div class="finish-encouragement">
+            <div class="encouragement-icon">{{ encouragementEmoji }}</div>
+            <div class="encouragement-text">{{ encouragementMessage }}</div>
+          </div>
+
           <div class="finish-metrics">
             <div class="metric">
               <div class="metric-label">Accuracy</div>
@@ -62,7 +67,7 @@
           </div>
 
           <div class="finish-actions">
-            <button class="btn btn-outline-primary btn-pill" @click="restart">Try Again</button>
+            <button v-if="exam?.allowRetry !== false" class="btn btn-outline-primary btn-pill" @click="restart">Try Again</button>
             <button class="btn btn-primary btn-pill" @click="goBack">Back to Tests</button>
           </div>
         </div>
@@ -88,6 +93,24 @@
             </button>
           </div>
         </div>
+
+        <!-- Show correct answer when viewing question in review mode -->
+        <div v-if="isFinished && currentQ" class="card-soft tp-review-answer">
+          <div class="review-answer-title">Correct Answer:</div>
+          <div class="review-answer-options">
+            <div
+              v-for="opt in currentQ.options"
+              :key="opt.id"
+              class="review-answer-opt"
+              :class="{ correct: opt.id === currentQ.correctOptionId, selected: answers[currentQ.id] === opt.id }"
+            >
+              <span class="review-answer-dot"></span>
+              <span class="review-answer-text">{{ opt.text }}</span>
+              <span v-if="opt.id === currentQ.correctOptionId" class="review-answer-badge">✓ Correct</span>
+              <span v-else-if="answers[currentQ.id] === opt.id" class="review-answer-badge wrong">✗ Your Answer</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div v-else class="tp-grid">
@@ -110,8 +133,7 @@
               v-for="opt in currentQ.options"
               :key="opt.id"
               class="tp-opt"
-              :class="optClass(opt.id)"
-              :disabled="answered"
+              :class="{ selected: answers[currentQ.id] === opt.id }"
               @click="choose(opt.id)"
             >
               <span class="opt-dot" aria-hidden="true"></span>
@@ -119,7 +141,7 @@
             </button>
           </div>
 
-          <div v-if="feedback" class="tp-feedback" :class="{ ok: lastWasCorrect, bad: !lastWasCorrect }">
+          <div v-if="feedback && !isFinished" class="tp-feedback">
             {{ feedback }}
           </div>
 
@@ -236,6 +258,37 @@ const subtitleText = computed(() => {
     : `You scored ${score.value} out of ${maxScore.value} (${percent.value}%)`
 })
 
+const encouragementMessage = computed(() => {
+  const isAr = i18n.locale === 'ar'
+  const p = percent.value
+  
+  if (p >= 90) {
+    return isAr 
+      ? 'أداء رائع! أنت تفهم المادة بشكل ممتاز. استمر في التميز! 🌟'
+      : 'Outstanding performance! You have excellent understanding. Keep up the great work! 🌟'
+  } else if (p >= 70) {
+    return isAr
+      ? 'عمل رائع! أنت على الطريق الصحيح. استمر في المذاكرة والتقدم! 💪'
+      : 'Great job! You\'re on the right track. Keep studying and improving! 💪'
+  } else if (p >= 50) {
+    return isAr
+      ? 'جيد! هناك مجال للتحسين. راجع الأخطاء واستمر في المحاولة! 📚'
+      : 'Good effort! There\'s room for improvement. Review your mistakes and keep trying! 📚'
+  } else {
+    return isAr
+      ? 'لا بأس! كلنا نتعلم من الأخطاء. راجع المادة وحاول مرة أخرى! 💪'
+      : 'Don\'t worry! We all learn from mistakes. Review the material and try again! 💪'
+  }
+})
+
+const encouragementEmoji = computed(() => {
+  const p = percent.value
+  if (p >= 90) return '🎉'
+  if (p >= 70) return '⭐'
+  if (p >= 50) return '📖'
+  return '💪'
+})
+
 const answered = computed(() => Boolean(answers.value[currentQ.value?.id]))
 
 const progressPct = computed(() => {
@@ -258,23 +311,13 @@ function goBack() {
   router.push('/tests')
 }
 
-function optClass(optId) {
-  if (!answered.value) return ''
-  const q = currentQ.value
-  const picked = answers.value[q.id]
-  if (optId === q.correctOptionId) return 'correct'
-  if (optId === picked && picked !== q.correctOptionId) return 'wrong'
-  return 'dim'
-}
-
 function choose(optId) {
   const q = currentQ.value
   answers.value = { ...answers.value, [q.id]: optId }
 
   const opt = q.options.find(o => o.id === optId)
-  const isCorrect = optId === q.correctOptionId
-  lastWasCorrect.value = isCorrect
-  feedback.value = opt?.feedback || (isCorrect ? 'Great job!' : 'Try again!')
+  // Don't show if correct/wrong during test - only show feedback if available
+  feedback.value = opt?.feedback || ''
 }
 
 function next() {
@@ -529,22 +572,12 @@ async function saveResultOnce() {
   background: #e2e8f0;
 }
 
-.tp-opt.correct {
-  border-color: rgba(34,197,94,0.6);
-  background: rgba(34,197,94,0.06);
+.tp-opt.selected {
+  border-color: rgba(0,191,255,0.6);
+  background: rgba(0,191,255,0.08);
 }
-.tp-opt.correct .opt-dot {
-  background: #22c55e;
-}
-.tp-opt.wrong {
-  border-color: rgba(239,68,68,0.55);
-  background: rgba(239,68,68,0.06);
-}
-.tp-opt.wrong .opt-dot {
-  background: #ef4444;
-}
-.tp-opt.dim {
-  opacity: 0.7;
+.tp-opt.selected .opt-dot {
+  background: #00bfff;
 }
 
 .tp-feedback {
@@ -553,16 +586,68 @@ async function saveResultOnce() {
   border-radius: 16px;
   font-weight: 800;
   border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(0,191,255,0.08);
+  color: #00335a;
 }
-.tp-feedback.ok {
+
+.tp-review-answer {
+  margin-top: 14px;
+}
+.review-answer-title {
+  font-weight: 900;
+  color: #00335a;
+  margin-bottom: 12px;
+  font-size: 1.1rem;
+}
+.review-answer-options {
+  display: grid;
+  gap: 10px;
+}
+.review-answer-opt {
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-weight: 700;
+}
+.review-answer-opt.correct {
+  border-color: rgba(34,197,94,0.6);
   background: rgba(34,197,94,0.08);
-  border-color: rgba(34,197,94,0.25);
-  color: #166534;
 }
-.tp-feedback.bad {
+.review-answer-opt.selected:not(.correct) {
+  border-color: rgba(239,68,68,0.55);
   background: rgba(239,68,68,0.08);
-  border-color: rgba(239,68,68,0.25);
-  color: #991b1b;
+}
+.review-answer-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #e2e8f0;
+}
+.review-answer-opt.correct .review-answer-dot {
+  background: #22c55e;
+}
+.review-answer-opt.selected:not(.correct) .review-answer-dot {
+  background: #ef4444;
+}
+.review-answer-text {
+  color: #00335a;
+}
+.review-answer-badge {
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #16a34a;
+}
+.review-answer-badge.wrong {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 .tp-actions {
@@ -746,6 +831,29 @@ async function saveResultOnce() {
   margin: 14px 0 6px;
   font-weight: 900;
   color: #00335a;
+}
+.finish-encouragement {
+  margin: 18px 0;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(0, 191, 255, 0.1), rgba(255, 215, 0, 0.08));
+  border: 1px solid rgba(0, 191, 255, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+}
+.encouragement-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.encouragement-text {
+  font-weight: 800;
+  color: #00335a;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  flex: 1;
 }
 .finish-actions {
   display: flex;

@@ -22,7 +22,7 @@
           </div>
         </div>
         <div class="stat-label">Active courses</div>
-        <div class="stat-value">24</div>
+        <div class="stat-value">{{ activeCoursesCount }}</div>
       </div>
 
       <div class="stat-card">
@@ -35,7 +35,7 @@
           </div>
         </div>
         <div class="stat-label">Total Tests</div>
-        <div class="stat-value">150</div>
+        <div class="stat-value">{{ totalTestsCount }}</div>
       </div>
 
       <div class="stat-card">
@@ -48,7 +48,7 @@
           </div>
         </div>
         <div class="stat-label">Available Games</div>
-        <div class="stat-value">12</div>
+        <div class="stat-value">{{ gamesCount }}</div>
       </div>
 
       <div class="stat-card">
@@ -61,7 +61,7 @@
           </div>
         </div>
         <div class="stat-label">Active Quizzes</div>
-        <div class="stat-value">45</div>
+        <div class="stat-value">{{ publishedTestsCount }}</div>
       </div>
     </div>
 
@@ -73,7 +73,7 @@
         <div class="section-container">
           <h3 class="section-title">Quick Actions</h3>
           <div class="actions-grid">
-            <div class="action-card" @click="$router.push('/admin/courses')">
+            <div class="action-card" @click="goAddCourse">
               <div class="action-icon">
                 <i class="bi bi-plus-lg"></i>
               </div>
@@ -83,7 +83,7 @@
               </div>
             </div>
 
-            <div class="action-card" @click="$router.push('/admin/exams')">
+            <div class="action-card" @click="goCreateQuiz">
               <div class="action-icon">
                 <i class="bi bi-question-circle"></i>
               </div>
@@ -93,7 +93,7 @@
               </div>
             </div>
 
-            <div class="action-card">
+            <div class="action-card" @click="goUploadGame">
               <div class="action-icon">
                  <i class="bi bi-cloud-upload"></i>
               </div>
@@ -119,41 +119,17 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
+                  <tr v-for="a in recentActivity" :key="a.key">
                     <td>
                       <div class="activity-user">
-                        <div class="user-icon bg-success-subtle icon-green text-success">
-                           <i class="bi bi-plus-lg small-icon"></i>
+                        <div class="user-icon" :class="a.iconClass">
+                          <i :class="a.icon" class="small-icon"></i>
                         </div>
-                        <span class="activity-text">New Math Quiz Added</span>
+                        <span class="activity-text">{{ a.text }}</span>
                       </div>
                     </td>
-                    <td>Today, 10:30 AM</td>
-                    <td><div class="activity-user"><span>Ali Ossama</span></div></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="activity-user">
-                        <div class="user-icon bg-primary-subtle text-primary">
-                          <i class="bi bi-pencil-fill small-icon"></i>
-                        </div>
-                        <span class="activity-text">Science course updated</span>
-                      </div>
-                    </td>
-                    <td>Yesterday, 3:45 PM</td>
-                    <td><div class="activity-user"><span>Maryam magdy</span></div></td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div class="activity-user">
-                         <div class="user-icon bg-purple-subtle text-purple">
-                          <i class="bi bi-person-fill small-icon"></i>
-                        </div>
-                        <span class="activity-text">New student registered</span>
-                      </div>
-                    </td>
-                    <td>Apr 12, 2023</td>
-                    <td><div class="activity-user"><span>Ahmed Abulallah</span></div></td>
+                    <td>{{ a.dateLabel }}</td>
+                    <td><div class="activity-user"><span>{{ a.by }}</span></div></td>
                   </tr>
                 </tbody>
               </table>
@@ -169,9 +145,9 @@
 
           <!-- Circular Chart -->
           <div class="circular-progress-container">
-            <div class="circular-progress"></div>
+            <div class="circular-progress" :style="{ background: circularBg }"></div>
              <div class="progress-content">
-                <div class="progress-total">231</div>
+                <div class="progress-total">{{ totalItems }}</div>
                 <div class="progress-label">Total Items</div>
             </div>
           </div>
@@ -183,12 +159,12 @@
                <div class="item-info-row">
                   <div class="item-info">
                       <div class="item-bullet"></div>
-                      <div class="item-name">Courses</div>
+                      <div class="item-name">Courses (Video/Text)</div>
                   </div>
-                  <div class="item-percentage">65%</div>
+                  <div class="item-percentage">{{ distCoursesPct }}%</div>
                </div>
                <div class="progress-bar-container">
-                  <div class="progress-bar" style="width: 65%;"></div>
+                  <div class="progress-bar" :style="{ width: `${distCoursesPct}%` }"></div>
                </div>
             </div>
 
@@ -199,10 +175,10 @@
                       <div class="item-bullet"></div>
                       <div class="item-name">Interactive Quizzes</div>
                   </div>
-                  <div class="item-percentage">25%</div>
+                  <div class="item-percentage">{{ distQuizzesPct }}%</div>
                </div>
                <div class="progress-bar-container">
-                  <div class="progress-bar" style="width: 25%;"></div>
+                  <div class="progress-bar" :style="{ width: `${distQuizzesPct}%` }"></div>
                </div>
             </div>
 
@@ -213,10 +189,10 @@
                       <div class="item-bullet"></div>
                       <div class="item-name">Games</div>
                   </div>
-                  <div class="item-percentage">10%</div>
+                  <div class="item-percentage">{{ distGamesPct }}%</div>
                </div>
                <div class="progress-bar-container">
-                  <div class="progress-bar" style="width: 10%;"></div>
+                  <div class="progress-bar" :style="{ width: `${distGamesPct}%` }"></div>
                </div>
             </div>
           </div>
@@ -226,6 +202,128 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCoursesStore } from '@/stores/courses.js'
+import { useExamsStore } from '@/stores/exams.js'
+import { useAdminStore } from '@/stores/admin.js'
+import { usersApi } from '@/api/usersApi.js'
+
+const router = useRouter()
+const coursesStore = useCoursesStore()
+const examsStore = useExamsStore()
+const adminStore = useAdminStore()
+
+const users = ref([])
+
+const gamesCount = 6 // matches current PlayWithUs list (static for now)
+
+onMounted(async () => {
+  await Promise.all([
+    coursesStore.load(),
+    examsStore.load(),
+    adminStore.load(),
+    usersApi.list().then((u) => { users.value = Array.isArray(u) ? u : [] }).catch(() => { users.value = [] })
+  ])
+})
+
+const activeCoursesCount = computed(() => coursesStore.courses.filter(c => (c.status || 'published') === 'published').length)
+const totalTestsCount = computed(() => examsStore.exams.length)
+const publishedTestsCount = computed(() => examsStore.published.length)
+
+const totalItems = computed(() => activeCoursesCount.value + totalTestsCount.value + gamesCount)
+
+const pct = (n) => {
+  const t = totalItems.value
+  if (!t) return 0
+  return Math.round((n / t) * 100)
+}
+
+const distCoursesPct = computed(() => pct(activeCoursesCount.value))
+const distQuizzesPct = computed(() => pct(totalTestsCount.value))
+const distGamesPct = computed(() => pct(gamesCount))
+
+const circularBg = computed(() => {
+  const c = distCoursesPct.value
+  const q = distQuizzesPct.value
+  const g = Math.max(0, 100 - c - q)
+  const s1 = c
+  const s2 = c + q
+  return `conic-gradient(#3b82f6 0 ${s1}%, #a855f7 ${s1}% ${s2}%, #f59e0b ${s2}% ${s2 + g}%, #e5e7eb ${s2 + g}% 100%)`
+})
+
+function fmtDate(iso) {
+  const d = iso ? new Date(iso) : null
+  if (!d || Number.isNaN(d.getTime())) return '—'
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+const adminName = computed(() => adminStore.admin?.name || 'Admin User')
+
+const recentActivity = computed(() => {
+  const items = []
+
+  for (const c of coursesStore.courses) {
+    const when = c.updatedAt || c.createdAt
+    if (!when) continue
+    const isNew = c.createdAt && c.updatedAt && String(c.createdAt) === String(c.updatedAt)
+    items.push({
+      key: `course-${c.id}-${when}`,
+      at: when,
+      by: adminName.value,
+      icon: isNew ? 'bi bi-plus-lg' : 'bi bi-pencil-fill',
+      iconClass: isNew ? 'bg-success-subtle text-success' : 'bg-primary-subtle text-primary',
+      text: isNew ? `New course added: ${c.title_en || c.title}` : `Course updated: ${c.title_en || c.title}`,
+      dateLabel: fmtDate(when)
+    })
+  }
+
+  for (const e of examsStore.exams) {
+    const when = e.updatedAt || e.createdAt
+    if (!when) continue
+    const isNew = e.createdAt && e.updatedAt && String(e.createdAt) === String(e.updatedAt)
+    items.push({
+      key: `exam-${e.id}-${when}`,
+      at: when,
+      by: adminName.value,
+      icon: 'bi bi-clipboard-check',
+      iconClass: isNew ? 'bg-success-subtle text-success' : 'bg-purple-subtle text-purple',
+      text: isNew ? `New test created: ${e.title}` : `Test updated: ${e.title}`,
+      dateLabel: fmtDate(when)
+    })
+  }
+
+  for (const u of users.value) {
+    const when = u.createdAt
+    if (!when) continue
+    items.push({
+      key: `user-${u.id}-${when}`,
+      at: when,
+      by: 'System',
+      icon: 'bi bi-person-fill',
+      iconClass: 'bg-purple-subtle text-purple',
+      text: `New student registered: ${u.name || u.email || u.id}`,
+      dateLabel: fmtDate(when)
+    })
+  }
+
+  return items
+    .sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
+    .slice(0, 5)
+})
+
+function goAddCourse() {
+  router.push({ name: 'admin-courses-new' })
+}
+function goCreateQuiz() {
+  router.push({ name: 'admin-exams-new' })
+}
+function goUploadGame() {
+  router.push({ name: 'play' })
+}
+</script>
 
 <style scoped>
 :deep(.text-purple) {

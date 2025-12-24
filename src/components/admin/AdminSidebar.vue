@@ -21,7 +21,7 @@
           <i class="bi bi-file-earmark-text"></i> Tests
         </li>
       </router-link>
-      <router-link to="/admin/subscriptions" custom v-slot="{ href, navigate, isActive }">
+      <router-link to="/admin/users" custom v-slot="{ href, navigate, isActive }">
         <li class="nav-item" :class="{ active: isActive }" @click="navigate">
           <i class="bi bi-people"></i> Users
         </li>

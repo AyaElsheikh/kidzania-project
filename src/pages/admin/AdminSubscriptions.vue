@@ -72,7 +72,7 @@
       <div class="d-flex justify-content-between align-items-center mt-3" v-if="filteredUsers.length > 0">
         <span class="text-muted">Showing <strong>{{ rangeStart }}–{{ rangeEnd }}</strong> of {{ filteredUsers.length }} results</span>
 
-        <ul class="pagination mb-0">
+        <ul class="pagination mb-0 admin-pagination">
           <li class="page-item" :class="{ disabled: currentPage === 1 }">
             <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
           </li>
@@ -99,15 +99,17 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth.js'
 import { useSubscriptionStore } from '@/stores/subscription.js'
 import { useCoursesStore } from '@/stores/courses.js'
+import { useToast } from 'vue-toastification'
 
 const auth = useAuthStore()
 const subs = useSubscriptionStore()
 const courses = useCoursesStore()
+const toast = useToast()
 
-onMounted(() => {
-  auth.load()
-  subs.load()
-  courses.load()
+onMounted(async () => {
+  await auth.load()
+  await subs.load()
+  await courses.load()
 })
 
 const users = computed(() => auth.users)
@@ -151,13 +153,13 @@ const setPage = (p) => currentPage.value = p
 
 // Actions
 const editUser = (user) => {
-  alert(`Edit user: ${user.name} (Feature coming soon)`)
+  toast.info(`Edit user: ${user.name} (Feature coming soon)`)
 }
 const removeUser = (id) => {
-  if (confirm('Delete this user?')) {
-    // auth.removeUser(id) // Assuming store doesn't have this yet, would need implementation
-    alert('User deletion would happen here.')
-  }
+  const confirmed = window.confirm('Delete this user?')
+  if (!confirmed) return
+  // auth.removeUser(id) // Assuming store doesn't have this yet, would need implementation
+  toast.info('User deletion would happen here.')
 }
 </script>
 
@@ -178,10 +180,49 @@ const removeUser = (id) => {
   font-weight: bold; font-size: 14px;
 }
 
-.pagination .page-link { color: #6b7280; border: none; margin: 0 4px; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
-.pagination .page-item.active .page-link { background-color: #00aaff; color: #fff; }
-.pagination .page-item.disabled .page-link { color: #ccc; cursor: not-allowed; }
-.pagination .page-link:hover:not(.active) { background-color: #f1f5f9; }
+/* Pagination (Admin dashboard style) */
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-pagination .page-link {
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 800;
+  margin: 0;
+  border-radius: 999px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.admin-pagination .page-item:not(:first-child):not(:last-child) .page-link {
+  width: 36px;
+  padding: 0;
+}
+.admin-pagination .page-item.active .page-link {
+  background: #00aaff;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(0, 170, 255, 0.28);
+}
+.admin-pagination .page-item.disabled .page-link {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+.admin-pagination .page-link:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+.admin-pagination .page-item.disabled .page-link:hover,
+.admin-pagination .page-item.active .page-link:hover {
+  transform: none;
+}
 
 .actions i { cursor: pointer; margin-left: 12px; color: #64748b; font-size: 1.1rem; }
 .actions i:hover { color: #00aaff; }

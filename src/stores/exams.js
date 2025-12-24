@@ -16,6 +16,7 @@ function normalizeExam(raw) {
     timeLimitMins: Number(raw?.timeLimitMins ?? 10),
     difficulty: raw?.difficulty || 'easy', // easy | medium | hard
     ageGroup: raw?.ageGroup || '4-6',
+    allowRetry: raw?.allowRetry !== undefined ? Boolean(raw.allowRetry) : true,
     createdAt: raw?.createdAt || nowIso(),
     updatedAt: raw?.updatedAt || nowIso(),
     publishedAt: raw?.publishedAt || null,

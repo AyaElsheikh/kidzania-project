@@ -83,7 +83,7 @@
       <div class="d-flex justify-content-between align-items-center mt-3" v-if="filteredExams.length > 0">
         <span class="text-muted">Showing <strong>{{ rangeStart }}–{{ rangeEnd }}</strong> of {{ filteredExams.length }} results</span>
 
-        <ul class="pagination mb-0">
+        <ul class="pagination mb-0 admin-pagination">
           <li class="page-item" :class="{ disabled: currentPage === 1 }">
             <a class="page-link" href="#" @click.prevent="prevPage">Previous</a>
           </li>
@@ -106,14 +106,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useExamsStore } from '@/stores/exams.js'
 import { useCoursesStore } from '@/stores/courses.js'
+import { useI18nStore } from '@/stores/i18n.js'
+import { useToast } from 'vue-toastification'
 
+const route = useRoute()
 const router = useRouter()
 const store = useExamsStore()
 const coursesStore = useCoursesStore()
+const i18n = useI18nStore()
+const toast = useToast()
 
 // Load data
 onMounted(() => {
@@ -124,8 +129,12 @@ onMounted(() => {
 const courses = computed(() => coursesStore.courses)
 
 // Filters
-const searchQuery = ref('')
+const searchQuery = ref(String(route.query.q || ''))
 const filterCourse = ref('')
+watch(() => route.query.q, (q) => {
+  searchQuery.value = String(q || '')
+  currentPage.value = 1
+})
 
 // Pagination
 const currentPage = ref(1)
@@ -174,8 +183,14 @@ const goCreate = () => router.push({ name: 'admin-exams-new' })
 const edit = (id) => router.push({ name: 'admin-exams-edit', params: { id } })
 
 const remove = async (id) => {
-  if (confirm('Delete this test?')) {
+  const msg = i18n.locale === 'ar' ? 'حذف هذا الامتحان؟' : 'Delete this test?'
+  const confirmed = window.confirm(msg)
+  if (!confirmed) return
+  try {
     await store.remove(id)
+    toast.success(i18n.locale === 'ar' ? 'تم حذف الامتحان.' : 'Test deleted.')
+  } catch (e) {
+    toast.error((e?.message || '').toString() || (i18n.locale === 'ar' ? 'فشل حذف الامتحان.' : 'Failed to delete test.'))
   }
 }
 </script>
@@ -189,10 +204,49 @@ const remove = async (id) => {
 .search-input input { width: 100%; padding: 12px 12px 12px 40px; border-radius: 14px; border: 1px solid #eee; }
 .table-card { background: #fff; border-radius: 18px; padding: 10px 20px 20px; }
 .table thead th { font-size: 13px; color: #6b7280; border-bottom: 1px solid #eee; padding-bottom: 12px; }
-.pagination .page-link { color: #6b7280; border: none; margin: 0 4px; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
-.pagination .page-item.active .page-link { background-color: #00aaff; color: #fff; }
-.pagination .page-item.disabled .page-link { color: #ccc; cursor: not-allowed; }
-.pagination .page-link:hover:not(.active) { background-color: #f1f5f9; }
+/* Pagination (Admin dashboard style) */
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-pagination .page-link {
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  font-weight: 800;
+  margin: 0;
+  border-radius: 999px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+.admin-pagination .page-item:not(:first-child):not(:last-child) .page-link {
+  width: 36px;
+  padding: 0;
+}
+.admin-pagination .page-item.active .page-link {
+  background: #00aaff;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(0, 170, 255, 0.28);
+}
+.admin-pagination .page-item.disabled .page-link {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+.admin-pagination .page-link:hover {
+  background: #e2e8f0;
+  transform: translateY(-1px);
+}
+.admin-pagination .page-item.disabled .page-link:hover,
+.admin-pagination .page-item.active .page-link:hover {
+  transform: none;
+}
 .text-darkblue { color: #033B62; }
 .actions i { cursor: pointer; margin-left: 12px; color: #64748b; font-size: 1.1rem; }
 .actions i:hover { color: #dc3545; }
