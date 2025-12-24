@@ -6,23 +6,23 @@
     </div>
 
     <ul class="nav flex-column">
-      <router-link to="/admin" custom v-slot="{ href, navigate, isExactActive }">
-        <li class="nav-item" :class="{ active: isExactActive }" @click="navigate">
+      <router-link to="/admin" custom v-slot="{ href, navigate }">
+        <li class="nav-item" :class="{ active: route.path === '/admin' }" @click="navigate">
           <i class="bi bi-grid"></i> Dashboard
         </li>
       </router-link>
-      <router-link to="/admin/courses" custom v-slot="{ href, navigate, isActive }">
-        <li class="nav-item" :class="{ active: isActive }" @click="navigate">
+      <router-link to="/admin/courses" custom v-slot="{ href, navigate }">
+        <li class="nav-item" :class="{ active: route.path.startsWith('/admin/courses') }" @click="navigate">
           <i class="bi bi-book"></i> Courses
         </li>
       </router-link>
-      <router-link to="/admin/exams" custom v-slot="{ href, navigate, isActive }">
-        <li class="nav-item" :class="{ active: isActive }" @click="navigate">
+      <router-link to="/admin/exams" custom v-slot="{ href, navigate }">
+        <li class="nav-item" :class="{ active: route.path.startsWith('/admin/exams') }" @click="navigate">
           <i class="bi bi-file-earmark-text"></i> Tests
         </li>
       </router-link>
-      <router-link to="/admin/users" custom v-slot="{ href, navigate, isActive }">
-        <li class="nav-item" :class="{ active: isActive }" @click="navigate">
+      <router-link to="/admin/users" custom v-slot="{ href, navigate }">
+        <li class="nav-item" :class="{ active: route.path.startsWith('/admin/users') }" @click="navigate">
           <i class="bi bi-people"></i> Users
         </li>
       </router-link>
@@ -36,10 +36,11 @@
 
 <script setup>
 import { useAdminStore } from '@/stores/admin.js'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 
 const admin = useAdminStore()
 const router = useRouter()
+const route = useRoute()
 
 const handleLogout = () => {
   admin.logout()
