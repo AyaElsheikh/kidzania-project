@@ -39,7 +39,11 @@ const displayAge = computed(() => auth.user?.age || '')
 const displayGrade = computed(() => auth.user?.grade || '')
 const ageLabel = computed(() => (i18n.locale === 'ar' ? `العمر: ${displayAge.value}` : `Age: ${displayAge.value}`))
 const gradeLabel = computed(() => (i18n.locale === 'ar' ? `الصف: ${displayGrade.value}` : `Grade: ${displayGrade.value}`))
-const avatarSrc = computed(() => auth.user?.avatar || '/assets/images/child.png')
+const avatarSrc = computed(() => {
+  if (auth.user?.avatar) return auth.user.avatar
+  const name = auth.user?.name || 'Kidzania User'
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=128&bold=true`
+})
 </script>
 
 <style scoped>

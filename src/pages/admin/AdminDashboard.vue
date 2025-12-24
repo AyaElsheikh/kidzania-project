@@ -51,18 +51,7 @@
         <div class="stat-value">{{ gamesCount }}</div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon-container">
-          <div class="stat-icon quizzes">
-            <i class="bi bi-question-circle fs-4 text-danger"></i>
-          </div>
-          <div class="stat-percentage">
-            <i class="bi bi-arrow-up-short me-1"></i> +8%
-          </div>
-        </div>
-        <div class="stat-label">Active Quizzes</div>
-        <div class="stat-value">{{ publishedTestsCount }}</div>
-      </div>
+
     </div>
 
     <!-- Dashboard Layout: Left Column (Quick Actions + Recent Activity) | Right Column (Content Distribution) -->
@@ -376,7 +365,7 @@ function goUploadGame() {
 /* Stats Cards */
 .stats-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 40px;
 }

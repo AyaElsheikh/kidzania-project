@@ -110,7 +110,11 @@ watchEffect(() => {
   form.grade = auth.user?.grade || ''
 })
 
-const previewAvatar = computed(() => form.avatar || '/assets/images/child.png')
+const previewAvatar = computed(() => {
+  if (form.avatar) return form.avatar
+  const name = form.name || 'Kidzania User'
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=128&bold=true`
+})
 
 function resetErrors() {
   errors.name = ''
