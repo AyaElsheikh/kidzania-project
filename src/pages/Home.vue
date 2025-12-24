@@ -133,9 +133,11 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18nStore } from '@/stores/i18n.js'
 import HomeChatbotWidget from '@/components/HomeChatbotWidget.vue'
 
+const router = useRouter()
 const i18n = useI18nStore()
 const t = i18n.t
 
@@ -240,7 +242,7 @@ const courseMapping = computed(() => {
 
 const viewCourseDetails = (course) => {
   const courseId = courseMapping.value[course.title] || 'c1'
-  window.open(`/course-details/${courseId}`, '_blank')
+  router.push(`/course-details/${courseId}`)
 }
 </script>
 
@@ -325,8 +327,8 @@ const viewCourseDetails = (course) => {
 
 
 .feature-main {
-  width: 280px;
-  height: 280px;
+  width: clamp(210px, 24vw, 280px);
+  height: clamp(210px, 24vw, 280px);
   object-fit: contain;
   border-radius: 22px;
 }
@@ -538,13 +540,13 @@ const viewCourseDetails = (course) => {
 .trusted-role {
   color: #5a6a77;
   font-weight: 500;
-  margin-left: 8px;
+  margin-inline-start: 8px;
 }
 
-.feature-item:nth-child(1) { margin-left: -130px; }
-.feature-item:nth-child(2) { margin-left: 65px; }
-.feature-item:nth-child(3) { margin-left: -130px; }
-.feature-item:nth-child(4) { margin-left: 65px; }
+.feature-item:nth-child(1) { margin-inline-start: -130px; }
+.feature-item:nth-child(2) { margin-inline-start: 65px; }
+.feature-item:nth-child(3) { margin-inline-start: -130px; }
+.feature-item:nth-child(4) { margin-inline-start: 65px; }
 .feature-item:nth-child(1),
 .feature-item:nth-child(3) {
   width: 380px;
@@ -554,6 +556,26 @@ const viewCourseDetails = (course) => {
 .feature-item:nth-child(4) {
   width: 380px;
   max-width: 100%;
+}
+
+@media (max-width: 992px) {
+  /* Tablet widths were getting overflow from the staggered negative margins */
+  .feature-item,
+  .feature-item:nth-child(1),
+  .feature-item:nth-child(2),
+  .feature-item:nth-child(3),
+  .feature-item:nth-child(4) {
+    margin-inline-start: 0 !important;
+    width: 100%;
+  }
+
+  .top-courses-section {
+    padding: 60px 20px 180px 20px;
+  }
+
+  .hero-sub {
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 768px) {

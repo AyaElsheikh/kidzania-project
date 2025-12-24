@@ -14,14 +14,24 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 const emit = defineEmits(['close'])
 const name = ref('')
 const email = ref('')
 const auth = useAuthStore()
+const router = useRouter()
 auth.load()
 const onSubmit = () => {
-  auth.login({ name: name.value || 'Guest', email: email.value || 'guest@example.com' })
+  // Use demo-friendly flow: create account if missing, then consider the user logged in.
+  // Password is handled inside the store (defaulted for new users).
+  auth.loginOrRegister({
+    name: name.value || 'Guest',
+    email: email.value || 'guest@example.com',
+    password: '12345678',
+    phone: ''
+  })
   emit('close')
+  router.push('/')
 }
 </script>

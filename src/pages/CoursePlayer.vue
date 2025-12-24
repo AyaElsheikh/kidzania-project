@@ -129,7 +129,7 @@
           <div class="cp-panel-title">{{ t('cp.resources') }}</div>
           <ul class="cp-res">
             <li v-for="r in resources" :key="r.label">
-              <a class="cp-res-link" :href="r.href" target="_blank" rel="noreferrer">{{ r.label }}</a>
+              <a class="cp-res-link" :href="r.href">{{ r.label }}</a>
             </li>
           </ul>
         </section>
@@ -146,16 +146,20 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useCoursesStore } from '@/stores/courses.js'
 import { useSubscriptionStore } from '@/stores/subscription.js'
+import { useAuthStore } from '@/stores/auth.js'
 import { useI18nStore } from '@/stores/i18n.js'
 import CustomVideoPlayer from '@/components/CustomVideoPlayer.vue'
 import SubscribeModal from '@/components/SubscribeModal.vue'
+import { issueCertificateIfNeeded } from '@/utils/certificates.js'
 
 const route = useRoute()
+const router = useRouter()
 const store = useCoursesStore()
 const sub = useSubscriptionStore()
+const auth = useAuthStore()
 const i18n = useI18nStore()
 const t = i18n.t
 
@@ -172,6 +176,7 @@ const noteText = ref('')
 
 onMounted(() => {
   store.load()
+  auth.load()
   sub.load()
   const saved = safeParseJSON(localStorage.getItem(LS_PLAYER), {})
   if (saved?.[route.params.id]) activeLessonId.value = saved[route.params.id]
@@ -311,10 +316,31 @@ function isLessonCompleted(lessonId) {
 function toggleComplete(lessonId) {
   const courseId = String(route.params.id || '')
   if (!courseId || !lessonId) return
+  const beforeList = doneByCourse.value?.[courseId] || []
+  const beforeDone = new Set(beforeList)
   const current = doneByCourse.value?.[courseId] || []
   const next = current.includes(lessonId) ? current.filter(x => x !== lessonId) : [...current, lessonId]
   doneByCourse.value = { ...doneByCourse.value, [courseId]: next }
   localStorage.setItem(LS_DONE, JSON.stringify(doneByCourse.value))
+
+  // If course just became fully completed, issue certificate and open it.
+  const c = course.value
+  if (!c || !Array.isArray(c.lessons) || !c.lessons.length) return
+  const afterDone = new Set(next)
+  const wasComplete = c.lessons.every(l => beforeDone.has(l.id))
+  const nowComplete = c.lessons.every(l => afterDone.has(l.id))
+  if (!wasComplete && nowComplete && isSub.value) {
+    const uid = auth.user?.id || 'guest'
+    issueCertificateIfNeeded(uid, courseId, {
+      userName: auth.user?.name || '',
+      courseTitle: displayTitle.value,
+      completionPercent: 100,
+      lessonsCompleted: c.lessons.length,
+      finalGrade: 'A+',
+      locale: i18n.locale
+    })
+    router.push({ name: 'certificate', params: { courseId } })
+  }
 }
 
 function onVideoEnded() {

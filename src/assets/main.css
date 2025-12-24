@@ -89,6 +89,19 @@ body {
   background-color: #ffffff;
 }
 
+/* Global media safety: prevent images/media from overflowing on small screens */
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+img,
+video {
+  height: auto;
+}
+
 /* Apply Arabic font when language is Arabic (RTL) */
 [dir="rtl"],
 [dir="rtl"] body,

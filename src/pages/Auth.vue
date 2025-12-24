@@ -204,7 +204,7 @@
 
 <script setup>
 import { reactive, ref, watch, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { useAdminStore } from '@/stores/admin.js'
 import { useI18nStore } from '@/stores/i18n.js'
@@ -234,13 +234,42 @@ const touched = reactive({
 })
 
 const router = useRouter()
+const route = useRoute()
 const auth = useAuthStore()
 const adminStore = useAdminStore()
 const toast = useToast()
 
+function safeRedirectTarget(raw) {
+  const s = String(raw || '').trim()
+  // only allow in-app relative paths
+  if (s.startsWith('/')) return s
+  return '/'
+}
+
+function clearReasonFromQuery() {
+  const q = { ...route.query }
+  if ('reason' in q) delete q.reason
+  // avoid extra navigation if already clean
+  router.replace({ query: q }).catch(() => {})
+}
+
 onMounted(async () => {
   await auth.load()
   await adminStore.load()
+
+  // Show one-time message when arriving from a guard (nav/enroll)
+  const reason = String(route.query.reason || '')
+  if (reason === 'enroll') {
+    toast.info(i18n.locale === 'ar'
+      ? 'لازم تسجّل دخول عشان تعمل Enroll في الكورس.'
+      : 'You need to log in to enroll in this course.')
+    clearReasonFromQuery()
+  } else if (reason === 'nav') {
+    toast.info(i18n.locale === 'ar'
+      ? 'لازم تسجّل دخول عشان تقدر تفتح الصفحة دي.'
+      : 'Please log in to access this page.')
+    clearReasonFromQuery()
+  }
 })
 
 const resetErrors = () => {
@@ -305,42 +334,24 @@ const onSubmit = async () => {
   
   try {
     if (mode.value === 'login') {
-      // admin shortcut
-      if (email.value === 'admin@gmail.com' && password.value === 'admin123') {
-        try {
-          await adminStore.setup({ name: 'Admin', username: 'admin@gmail.com', password: 'admin123' })
-        } catch (e) {
-          // Admin might already exist, continue
-        }
-        
-        const adminLoggedIn = await adminStore.login({ username: 'admin@gmail.com', password: 'admin123' })
-        
-        if (adminLoggedIn) {
-          // Also ensure user exists in auth store so header shows generic logged in state if needed
-          try {
-            await auth.loginOrRegister({
-              name: 'Admin',
-              phone: '0000000000',
-              email: 'admin@gmail.com',
-              password: 'admin123'
-            })
-          } catch (e) {
-            // User might already exist, continue
-          }
-          
-          toast.success(i18n.locale === 'ar' ? 'تم تسجيل الدخول كمسؤول بنجاح!' : 'Logged in as admin successfully!')
-          router.push('/admin')
-          return
-        } else {
-          toast.error(i18n.locale === 'ar' ? 'فشل تسجيل الدخول كمسؤول.' : 'Failed to login as admin.')
+      const emailLower = String(email.value || '').trim().toLowerCase()
+      // Admin login from the same page (no separate admin login page)
+      if (emailLower === 'admin@gmail.com') {
+        const ok = await adminStore.login({ username: emailLower, password: password.value })
+        if (!ok) {
+          errors.password = i18n.locale === 'ar' ? 'بيانات الأدمن غير صحيحة.' : 'Invalid admin credentials.'
+          toast.error(errors.password)
           return
         }
+        toast.success(i18n.locale === 'ar' ? 'تم تسجيل الدخول كأدمن بنجاح!' : 'Logged in as admin successfully!')
+        const to = String(route.query.redirect || '/admin')
+        router.push(to)
+        return
       }
-      
       // Regular user login
       await auth.login({ email: email.value.trim(), password: password.value })
       toast.success(i18n.locale === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Logged in successfully!')
-      router.push('/profile')
+      router.push(safeRedirectTarget(route.query.redirect || '/'))
     } else {
       // Signup
       await auth.register({
@@ -351,13 +362,16 @@ const onSubmit = async () => {
         password: password.value
       })
       toast.success(i18n.locale === 'ar' ? 'تم إنشاء الحساب بنجاح!' : 'Account created successfully!')
-      router.push('/profile')
+      router.push(safeRedirectTarget(route.query.redirect || '/'))
     }
   } catch (err) {
     const errorMsg = err?.message || ''
     if (errorMsg === 'no-user' || errorMsg.includes('no-user')) {
       errors.email = t('auth.errors.noUser')
       toast.error(i18n.locale === 'ar' ? 'البريد الإلكتروني غير مسجل.' : 'Email not registered.')
+    } else if (errorMsg === 'reserved-admin' || errorMsg.includes('reserved-admin')) {
+      errors.email = t('auth.errors.reservedAdmin')
+      toast.error(i18n.locale === 'ar' ? 'هذا البريد محجوز للأدمن. أدخل كلمة مرور الأدمن لتسجيل الدخول.' : 'This email is reserved for admin. Enter the admin password to log in.')
     } else if (errorMsg === 'suspended' || errorMsg.includes('suspended')) {
       errors.email = i18n.locale === 'ar' ? 'هذا الحساب موقوف. تواصل مع الدعم.' : 'This account is suspended. Please contact support.'
       toast.error(i18n.locale === 'ar' ? 'هذا الحساب موقوف. تواصل مع الدعم.' : 'This account is suspended. Please contact support.')

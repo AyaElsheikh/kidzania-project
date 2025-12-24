@@ -26,6 +26,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18nStore } from '@/stores/i18n.js'
 
 const props = defineProps({
@@ -34,6 +35,7 @@ const props = defineProps({
 
 const i18n = useI18nStore()
 const t = i18n.t
+const router = useRouter()
 const priceLabel = computed(() => (props.course.price ?? 0) === 0 ? t('explore.free') : `$${props.course.price}`)
 const displayTitle = computed(() =>
   i18n.locale === 'en'
@@ -66,7 +68,7 @@ const tagColor = (tag) => {
 
 const viewDetails = () => {
   // Navigate to the CourseDetailsPage using Vue Router
-  window.open(`/course-details/${props.course.id}`, '_blank')
+  router.push(`/course-details/${props.course.id}`)
 }
 </script>
 

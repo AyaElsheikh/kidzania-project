@@ -484,6 +484,7 @@ const goToMyCourses = () => {
 .form-row {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .form-group {
@@ -722,6 +723,68 @@ label {
   }
   .summary-card {
     position: static;
+  }
+}
+
+@media (max-width: 576px) {
+  .payment-page {
+    padding: 28px 0 56px;
+  }
+
+  .payment-container {
+    padding: 0 14px;
+  }
+
+  .page-title {
+    font-size: 1.7rem;
+    margin-bottom: 22px;
+  }
+
+  .section-block {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .summary-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .course-preview {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .course-img {
+    width: 100%;
+    height: 150px;
+  }
+
+  .success-card {
+    padding: 28px 18px;
+    border-radius: 22px;
+    max-width: 100%;
+  }
+
+  .success-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 22px;
+  }
+
+  .success-icon svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .success-card h2 {
+    font-size: 1.4rem;
+    margin-bottom: 20px;
   }
 }
 </style>

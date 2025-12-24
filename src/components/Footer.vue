@@ -1,5 +1,17 @@
 <template>
-  <footer class="footer-section footstyle text-white mt-auto">
+  <footer class="footer-section text-white mt-auto">
+    <!-- Decorative wave at the top of the footer (prevents clipping across pages/screen sizes) -->
+    <svg class="footer-wave" viewBox="0 0 1440 200" preserveAspectRatio="none" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M0,40
+           C160,20 320,0 480,18
+           C640,36 720,95 900,85
+           C1080,75 1180,30 1320,42
+           C1385,48 1425,58 1440,64
+           L1440,0 L0,0 Z"
+      />
+    </svg>
     <div class="container footer-container">
       <div class="footer-content">
         <div class="footer-logo-section">
@@ -74,23 +86,81 @@
 </template>
 
 <script setup>
+import { nextTick, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useI18nStore } from '@/stores/i18n.js'
 
 const i18n = useI18nStore()
 const t = i18n.t
+
+const footerEl = ref(null)
+const route = useRoute()
+
+function isTransparent(color) {
+  if (!color) return true
+  const c = color.toLowerCase().trim()
+  return c === 'transparent' || c === 'rgba(0, 0, 0, 0)' || c === 'rgba(0,0,0,0)'
+}
+
+function resolveBgFrom(el) {
+  let cur = el
+  while (cur && cur !== document.documentElement) {
+    const cs = window.getComputedStyle(cur)
+    if (cs.backgroundImage && cs.backgroundImage !== 'none') {
+      // For gradients/images, background-color might be transparent; fallback to its bg-color if any.
+      if (!isTransparent(cs.backgroundColor)) return cs.backgroundColor
+      return null
+    }
+    if (!isTransparent(cs.backgroundColor)) return cs.backgroundColor
+    cur = cur.parentElement
+  }
+  return null
+}
+
+async function syncWaveColor() {
+  await nextTick()
+  const main = document.querySelector('main')
+  const bg =
+    resolveBgFrom(main) ||
+    resolveBgFrom(main?.firstElementChild) ||
+    resolveBgFrom(document.body) ||
+    '#ffffff'
+
+  if (footerEl.value) {
+    footerEl.value.style.setProperty('--footer-wave-color', bg)
+  }
+}
+
+onMounted(() => {
+  syncWaveColor()
+})
+
+watch(
+  () => route.fullPath,
+  () => syncWaveColor()
+)
 </script>
 
 <style scoped>
-.footstyle {
-  background: url('/assets/images/foot.png') center top / contain no-repeat;
-  background-size: 100% auto;
-  background-position: center -50px;
-}
-
 .footer-section {
   background-color: var(--primary, #033B62);
   position: relative;
-  padding: 220px 0 40px 0;
+  /* keep space for the wave so it never gets clipped */
+  --footer-wave-height: clamp(90px, 13vw, 170px);
+  padding: calc(var(--footer-wave-height) + 44px) 0 40px 0;
+}
+
+.footer-wave {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--footer-wave-height);
+  display: block;
+  pointer-events: none;
+  z-index: 1;
+  /* matches the background above the footer (set dynamically in script) */
+  color: var(--footer-wave-color, #ffffff);
 }
 
 .footer-container {

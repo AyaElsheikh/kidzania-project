@@ -1,11 +1,16 @@
 <template>
   <div class="my-courses-page">
-    <header class="myc-hero">
-      <div class="myc-hero-inner container">
-        <h1 class="myc-hero-title">{{ t('myCourses.heroTitle') }}</h1>
-        <p class="myc-hero-subtitle">{{ t('myCourses.heroSubtitle') }}</p>
+    <header class="hero position-relative overflow-hidden">
+      <div class="hero-inner container">
+        <h1 class="hero-title"><span>{{ t('myCourses.heroTitle') }}</span></h1>
+        <p class="hero-subtitle">{{ t('myCourses.heroSubtitle') }}</p>
       </div>
-      <div class="myc-hero-wave" aria-hidden="true"></div>
+      <!-- Wave Divider -->
+      <div class="wave-divider">
+        <svg viewBox="0 0 1440 150" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,75 C240,0 480,150 720,75 C960,0 1200,150 1440,75 L1440,150 L0,150 Z" fill="white"/>
+        </svg>
+      </div>
     </header>
 
     <section class="container myc-content">
@@ -153,6 +158,26 @@
         <div class="myc-cert-box card-soft">
           <h3 class="myc-cert-title">{{ t('myCourses.certificates.title') }}</h3>
           <p class="myc-cert-subtitle">{{ t('myCourses.certificates.subtitle', { count: stats.certificates }) }}</p>
+        </div>
+
+        <div v-if="completedCourses.length" class="myc-cert-grid">
+          <article v-for="c in completedCourses" :key="c.id" class="myc-cert-card card-soft">
+            <div class="myc-cert-media">
+              <img :src="c.thumbnail" :alt="displayTitle(c)" class="myc-cert-img" />
+            </div>
+            <div class="myc-cert-body">
+              <div class="myc-cert-name">{{ displayTitle(c) }}</div>
+              <div class="myc-cert-meta">{{ (c.lessons?.length || 0) }} {{ t('explore.lessons') }}</div>
+              <router-link class="myc-cert-open" :to="`/certificate/${c.id}`">
+                {{ t('myCourses.certificates.view') }}
+                <span aria-hidden="true">→</span>
+              </router-link>
+            </div>
+          </article>
+        </div>
+
+        <div v-else class="myc-cert-box card-soft">
+          <p class="myc-cert-subtitle">{{ t('profile.empty') }}</p>
           <router-link to="/courses" class="myc-cert-btn">{{ t('myCourses.discover.button') }}</router-link>
         </div>
       </div>
@@ -302,21 +327,25 @@ function displayDesc(course) {
   background: #fff;
 }
 
-.myc-hero {
+/* Hero - matching Tests/PlayWithUs */
+.hero {
   position: relative;
   width: 100%;
-  min-height: clamp(280px, 45vh, 430px);
-  display: grid;
-  place-items: center;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   background-image: url('/assets/images/Mycourses.png');
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  padding-top: 90px;
+  padding-bottom: 120px;
   overflow: hidden;
 }
 
-.myc-hero::before {
+.hero::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -325,38 +354,63 @@ function displayDesc(course) {
   pointer-events: none;
 }
 
-.myc-hero-inner {
+.hero-inner {
   position: relative;
   z-index: 2;
-  padding: 48px 0 70px;
 }
 
-.myc-hero-title {
+.hero-title {
   color: #ffffff;
   margin: 0;
   font-weight: 800;
   line-height: 1.05;
-  font-size: clamp(2rem, 5vw, 3.6rem);
+  font-size: clamp(2.2rem, 4.8vw, 3.2rem);
   text-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   letter-spacing: 2px;
 }
 
-.myc-hero-subtitle {
-  color: rgba(255, 255, 255, 0.95);
-  margin-top: 12px;
-  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+.hero-title span {
+  display: block;
 }
 
-.myc-hero-wave {
+.hero-subtitle {
+  color: rgba(255, 255, 255, 0.95);
+  margin: 12px 0 0 0;
+  font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  font-weight: 700;
+}
+
+.wave-divider {
   position: absolute;
-  left: 0;
-  right: 0;
   bottom: -1px;
-  height: 70px;
-  background: #fff;
-  border-top-left-radius: 120% 100%;
-  border-top-right-radius: 120% 100%;
-  transform: scaleX(1.15);
+  left: 0;
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.wave-divider svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: 58vh;
+    padding-top: 70px;
+    padding-bottom: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    min-height: 50vh;
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
 }
 
 .myc-content {
@@ -705,6 +759,7 @@ function displayDesc(course) {
   margin-top: 18px;
   display: grid;
   place-items: center;
+  gap: 12px;
 }
 
 .myc-cert-box {
@@ -714,6 +769,67 @@ function displayDesc(course) {
   padding: 22px;
   border: 1px solid rgba(3, 59, 98, 0.08);
   text-align: center;
+}
+
+.myc-cert-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.myc-cert-card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(3, 59, 98, 0.08);
+}
+
+.myc-cert-media { padding: 12px 12px 0; }
+.myc-cert-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.myc-cert-body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.myc-cert-name {
+  font-weight: 900;
+  color: var(--primary, #033B62);
+  text-align: start;
+}
+
+.myc-cert-meta {
+  color: rgba(3, 59, 98, 0.65);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-align: start;
+}
+
+.myc-cert-open {
+  margin-top: auto;
+  background: rgba(0, 191, 255, 0.10);
+  color: rgba(3, 59, 98, 0.9);
+  border: 1px solid rgba(0, 191, 255, 0.22);
+  border-radius: 999px;
+  padding: 10px 12px;
+  text-decoration: none;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.myc-cert-open:hover {
+  background: rgba(0, 191, 255, 0.14);
 }
 
 .myc-cert-title {
@@ -741,6 +857,7 @@ function displayDesc(course) {
 
 @media (max-width: 992px) {
   .myc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .myc-cert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 576px) {
@@ -748,5 +865,6 @@ function displayDesc(course) {
   .myc-stats { grid-template-columns: 1fr; }
   .myc-stat { justify-content: flex-start; }
   .myc-grid { grid-template-columns: 1fr; }
+  .myc-cert-grid { grid-template-columns: 1fr; }
 }
 </style>

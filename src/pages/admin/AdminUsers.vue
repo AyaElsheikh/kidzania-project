@@ -78,6 +78,7 @@
         <thead>
           <tr>
             <th style="width: 38%;">USER</th>
+            <th style="width: 10%;">ROLE</th>
             <th style="width: 14%;">STATUS</th>
             <th style="width: 22%;">EMAIL</th>
             <th style="width: 16%;">SUBSCRIPTION</th>
@@ -100,6 +101,12 @@
             </td>
 
             <td>
+              <span class="role-pill" :class="isReservedAdminEmail(u.email) ? 'role--admin' : 'role--user'">
+                {{ isReservedAdminEmail(u.email) ? 'Admin' : 'User' }}
+              </span>
+            </td>
+
+            <td>
               <span class="status-pill" :class="u.status === 'suspended' ? 'status--bad' : 'status--ok'">
                 {{ u.status === 'suspended' ? 'Suspended' : 'Active' }}
               </span>
@@ -115,18 +122,19 @@
 
             <td class="text-end">
               <div class="actions-cell">
-                <button class="act-btn" type="button" title="Edit" @click="openConfirm('edit', u)">
+                <button class="act-btn" type="button" title="Edit" :disabled="isReservedAdminEmail(u.email)" @click="openConfirm('edit', u)">
                   <i class="bi bi-pencil" aria-hidden="true"></i>
                 </button>
                 <button
                   class="act-btn"
                   type="button"
                   :title="u.status === 'suspended' ? 'Activate' : 'Suspend'"
+                  :disabled="isReservedAdminEmail(u.email)"
                   @click="openConfirm('toggle', u)"
                 >
                   <i :class="u.status === 'suspended' ? 'bi bi-check2-circle' : 'bi bi-slash-circle'" aria-hidden="true"></i>
                 </button>
-                <button class="act-btn act-btn--danger" type="button" title="Delete" @click="openConfirm('delete', u)">
+                <button class="act-btn act-btn--danger" type="button" title="Delete" :disabled="isReservedAdminEmail(u.email)" @click="openConfirm('delete', u)">
                   <i class="bi bi-trash" aria-hidden="true"></i>
                 </button>
               </div>
@@ -134,7 +142,7 @@
           </tr>
 
           <tr v-if="paginatedUsers.length === 0">
-            <td colspan="5" class="text-center py-5 text-muted">No users found.</td>
+            <td colspan="6" class="text-center py-5 text-muted">No users found.</td>
           </tr>
         </tbody>
       </table>
@@ -241,6 +249,15 @@ import { subscriptionsApi } from '@/api/subscriptionsApi.js'
 
 const toast = useToast()
 const route = useRoute()
+const RESERVED_ADMIN_EMAIL = 'admin@gmail.com'
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase()
+}
+
+function isReservedAdminEmail(email) {
+  return normalizeEmail(email) === RESERVED_ADMIN_EMAIL
+}
 
 const isLoading = ref(false)
 const isSaving = ref(false)
@@ -519,9 +536,13 @@ async function saveUser() {
   if (isSaving.value) return
 
   const name = (form.name || '').trim()
-  const email = (form.email || '').trim().toLowerCase()
+  const email = normalizeEmail(form.email)
   if (!name) { toast.error('Name is required.'); return }
   if (!email) { toast.error('Email is required.'); return }
+  if (isReservedAdminEmail(email)) {
+    toast.error('This email is reserved for the only Admin account (admin@gmail.com). Please use a different email.')
+    return
+  }
 
   isSaving.value = true
   try {
@@ -553,6 +574,11 @@ async function saveUser() {
     }
 
     // edit
+    // prevent updating any user to the reserved admin email (and protect legacy data)
+    if (isReservedAdminEmail(email)) {
+      toast.error('This email is reserved for the only Admin account (admin@gmail.com).')
+      return
+    }
     const patch = {
       name,
       email,
@@ -763,6 +789,27 @@ async function saveUser() {
   font-weight: 800;
   font-size: 12px;
 }
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: #f1f5f9;
+  color: #475569;
+}
+.role--admin {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.35);
+  color: #854d0e;
+}
+.role--user {
+  background: rgba(2, 132, 199, 0.12);
+  border-color: rgba(2, 132, 199, 0.22);
+  color: #0284c7;
+}
 .status--ok { background: rgba(22,163,74,0.12); color: #16a34a; }
 .status--bad { background: rgba(220,38,38,0.12); color: #dc2626; }
 .sub--yes { background: rgba(2,132,199,0.12); color: #0284c7; }
@@ -794,6 +841,15 @@ async function saveUser() {
 }
 .act-btn:hover { background: #f1f5f9; color: #00aaff; }
 .act-btn--danger:hover { color: #dc2626; background: rgba(220,38,38,0.08); }
+
+.act-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.act-btn:disabled:hover {
+  background: transparent;
+  color: #64748b;
+}
 
 .users-pagination {
   display: flex;

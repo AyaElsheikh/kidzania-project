@@ -327,7 +327,9 @@ function ensureQuestionIsValidOrToast(q, idxForMessage = null) {
 }
 
 function ensureAtLeastOneQuestion() {
-  if (draft.questions.length === 0) addQuestion()
+  // Intentionally do nothing.
+  // We start with zero questions and let the admin click "+ Add Question",
+  // so we don't show a "question added" toast just by opening the page.
 }
 
 function addQuestion() {
@@ -402,7 +404,6 @@ async function loadIfEditing() {
   await Promise.all([coursesStore.load(), examsStore.load()])
   const id = route.params.id
   if (!id) {
-    ensureAtLeastOneQuestion()
     return
   }
 
@@ -419,7 +420,6 @@ async function loadIfEditing() {
   draft.ageGroup = found.ageGroup || '4-6'
   draft.allowRetry = found.allowRetry !== undefined ? Boolean(found.allowRetry) : true
   draft.questions = Array.isArray(found.questions) ? JSON.parse(JSON.stringify(found.questions)) : []
-  ensureAtLeastOneQuestion()
 }
 
 let autosaveTimer = null

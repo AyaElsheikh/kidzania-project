@@ -2,6 +2,11 @@ import { defineStore } from 'pinia'
 import { usersApi } from '@/api/usersApi.js'
 
 const LS_KEY = 'kidzania_auth'
+const RESERVED_ADMIN_EMAIL = 'admin@gmail.com'
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase()
+}
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -64,6 +69,9 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
       this.error = null
       try {
+        if (normalizeEmail(email) === RESERVED_ADMIN_EMAIL) {
+          throw new Error('reserved-admin')
+        }
         // Check if user exists
         const existing = await usersApi.findByEmail(email)
         if (Array.isArray(existing) && existing.length > 0) {
@@ -107,6 +115,9 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
       this.error = null
       try {
+        if (normalizeEmail(email) === RESERVED_ADMIN_EMAIL) {
+          throw new Error('reserved-admin')
+        }
         const users = await usersApi.findByEmail(email)
         const exists = Array.isArray(users) ? users[0] : null
         
@@ -134,6 +145,9 @@ export const useAuthStore = defineStore('auth', {
     },
     async loginOrRegister({ name, email, password, phone }) {
       try {
+        if (normalizeEmail(email) === RESERVED_ADMIN_EMAIL) {
+          throw new Error('reserved-admin')
+        }
         const users = await usersApi.findByEmail(email)
         const exists = Array.isArray(users) ? users[0] : null
         
