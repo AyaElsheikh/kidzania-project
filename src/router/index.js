@@ -102,7 +102,7 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   // Ensure auth store is hydrated for guards
   const auth = useAuthStore()
   auth.load()
