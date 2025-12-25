@@ -377,6 +377,14 @@ watch(() => route.query.q, (q) => {
   currentPage.value = 1
 })
 
+watch(() => route.query.action, (act) => {
+  if (act === 'new') {
+    openCreate()
+    // optionally clear query
+    // router.replace({ query: { ...route.query, action: undefined } })
+  }
+}, { immediate: true })
+
 const totalPages = computed(() => Math.max(1, Math.ceil(filteredUsers.value.length / itemsPerPage)))
 const paginatedUsers = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage

@@ -82,13 +82,13 @@
               </div>
             </div>
 
-            <div class="action-card" @click="goUploadGame">
+            <div class="action-card" @click="goAddUser">
               <div class="action-icon">
-                 <i class="bi bi-cloud-upload"></i>
+                 <i class="bi bi-person-plus"></i>
               </div>
               <div class="action-info">
-                <h4>Upload Games</h4>
-                <p>Add Interactive Content</p>
+                <h4>Add New User</h4>
+                <p>Create student account</p>
               </div>
             </div>
           </div>
@@ -309,8 +309,8 @@ function goAddCourse() {
 function goCreateQuiz() {
   router.push({ name: 'admin-exams-new' })
 }
-function goUploadGame() {
-  router.push({ name: 'play' })
+function goAddUser() {
+  router.push({ name: 'admin-users', query: { action: 'new' } })
 }
 </script>
 
