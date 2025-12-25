@@ -109,6 +109,8 @@ router.beforeEach((to) => {
 
   if (to.path.startsWith('/admin')) {
     const admin = useAdminStore()
+    // ensure we check the freshest state from LS
+    await admin.load()
     if (!admin.loggedIn) {
       return { name: 'auth', query: { redirect: to.fullPath } }
     }

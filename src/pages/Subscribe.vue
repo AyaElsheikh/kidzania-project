@@ -345,11 +345,18 @@ const validate = () => {
   Object.keys(errors).forEach(key => delete errors[key])
 
   // Name validation
-  if (/\d/.test(form.firstName)) {
+  if (!form.firstName?.trim()) {
+    errors.firstName = t('subscribe.errors.required') || 'Required'
+    isValid = false
+  } else if (/\d/.test(form.firstName)) {
     errors.firstName = t('subscribe.errors.nameNumbers')
     isValid = false
   }
-  if (/\d/.test(form.lastName)) {
+
+  if (!form.lastName?.trim()) {
+    errors.lastName = t('subscribe.errors.required') || 'Required'
+    isValid = false
+  } else if (/\d/.test(form.lastName)) {
     errors.lastName = t('subscribe.errors.nameNumbers')
     isValid = false
   }
@@ -392,6 +399,15 @@ const validate = () => {
   // CVV validation
   if (!/^\d{3}$/.test(form.cvv)) {
     errors.cvv = t('subscribe.errors.invalidCvv')
+    isValid = false
+  }
+
+  // Card Holder validation
+  if (!form.cardHolder?.trim()) {
+    errors.cardHolder = t('subscribe.errors.required') || 'Required'
+    isValid = false
+  } else if (/\d/.test(form.cardHolder)) {
+    errors.cardHolder = t('subscribe.errors.nameNumbers')
     isValid = false
   }
 

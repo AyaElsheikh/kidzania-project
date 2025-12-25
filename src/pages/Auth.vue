@@ -349,11 +349,13 @@ const onSubmit = async () => {
         return
       }
       // Regular user login
+      adminStore.logout() // Security: ensure no admin session remains
       await auth.login({ email: email.value.trim(), password: password.value })
       toast.success(i18n.locale === 'ar' ? 'تم تسجيل الدخول بنجاح!' : 'Logged in successfully!')
       router.push(safeRedirectTarget(route.query.redirect || '/'))
     } else {
       // Signup
+      adminStore.logout() // Security: ensure no admin session from previous state
       await auth.register({
         name: name.value.trim(),
         phone: phone.value.trim(),
